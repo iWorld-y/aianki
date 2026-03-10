@@ -1,0 +1,28 @@
+server:
+  http:
+    addr: 0.0.0.0:8000
+    timeout: 1s
+
+data:
+  database:
+    driver: postgres
+    source: postgres://snapcard:snapcard_dev_2026@localhost:5432/snapcard?sslmode=disable
+
+auth:
+  jwt_secret: "dev-secret-key-2026"
+  jwt_expire_days: 7
+
+wechat:
+  app_id: "wx1f0edb2d79745277"
+  app_secret: "your-wechat-secret"
+
+ai:
+  api_key: "sk-your-dashscope-key"
+  base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+  model: "qwen-vl-max"
+
+fsrs:
+  max_daily_reviews: 50
+
+log:
+  level: info
