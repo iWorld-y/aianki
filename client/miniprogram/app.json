@@ -1,11 +1,39 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/logs/logs"
+    "pages/decks/index",
+    "pages/profile/index",
+    "pages/review/index",
+    "pages/create/index"
   ],
   "window": {
     "navigationBarTextStyle": "black",
     "navigationStyle": "custom"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#1890ff",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "assets/icons/home.png",
+        "selectedIconPath": "assets/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/decks/index",
+        "text": "卡组库",
+        "iconPath": "assets/icons/deck.png",
+        "selectedIconPath": "assets/icons/deck-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "assets/icons/profile.png",
+        "selectedIconPath": "assets/icons/profile-active.png"
+      }
+    ]
   },
   "style": "v2",
   "rendererOptions": {

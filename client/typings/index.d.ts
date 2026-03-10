@@ -2,7 +2,11 @@
 
 interface IAppOption {
   globalData: {
-    userInfo?: WechatMiniprogram.UserInfo,
+    userInfo?: WechatMiniprogram.UserInfo
+    isLoggedIn: boolean
+    token: string
+    apiBaseURL: string
   }
-  userInfoReadyCallback?: WechatMiniprogram.GetUserInfoSuccessCallback,
+  userInfoReadyCallback?: WechatMiniprogram.GetUserInfoSuccessCallback
+  checkLogin(): void
 }
