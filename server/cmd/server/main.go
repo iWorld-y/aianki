@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"log"
 	"os"
 	"os/signal"
@@ -41,7 +40,7 @@ func main() {
 	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
 	<-stop
 
-	if err := app.Stop(context.Background()); err != nil {
+	if err := app.Stop(); err != nil {
 		log.Printf("failed to stop app: %v", err)
 	}
 }
