@@ -69,55 +69,77 @@ Component({
     /**
      * 执行登录流程
      */
-    async performLogin(userInfo: WechatMiniprogram.UserInfo) {
-      try {
-        wx.showLoading({ title: '登录中...' })
+    performLogin(userInfo: WechatMiniprogram.UserInfo) {
+      wx.showLoading({ title: '登录中...' })
 
-        // 1. 获取临时 code
-        const { code } = await wx.login()
+      // 1. 获取临时 code
+      wx.login({
+        success: (loginRes) => {
+          if (!loginRes.code) {
+            wx.hideLoading()
+            wx.showToast({
+              title: '获取登录凭证失败',
+              icon: 'none'
+            })
+            return
+          }
 
-        // 2. 调用后端登录接口
-        const res = await wx.request({
-          url: `${app.globalData.apiBaseURL}/auth/login`,
-          method: 'POST',
-          data: { code, userInfo },
-          header: { 'Content-Type': 'application/json' }
-        })
+          // 2. 调用后端登录接口
+          wx.request({
+            url: `${app.globalData.apiBaseURL}/auth/login`,
+            method: 'POST',
+            data: { code: loginRes.code, userInfo },
+            header: { 'Content-Type': 'application/json' },
+            success: (res) => {
+              wx.hideLoading()
 
-        wx.hideLoading()
+              const data = res.data as any
+              if (data.code !== 0 || !data.data) {
+                wx.showToast({
+                  title: data.message || '登录失败',
+                  icon: 'none'
+                })
+                return
+              }
 
-        const data = res.data as any
-        if (data.code !== 0 || !data.data) {
-          throw new Error(data.message || '登录失败')
+              const { token } = data.data
+
+              // 3. 保存登录状态
+              app.setLoginState(userInfo, token)
+
+              // 4. 关闭弹窗
+              this.hide()
+
+              // 5. 执行登录前的操作
+              if (this.data.pendingAction) {
+                this.data.pendingAction()
+              }
+
+              // 6. 通知页面刷新
+              this.triggerEvent('loginSuccess', { userInfo })
+
+              wx.showToast({
+                title: '登录成功',
+                icon: 'success'
+              })
+            },
+            fail: () => {
+              wx.hideLoading()
+              wx.showToast({
+                title: '网络请求失败，请重试',
+                icon: 'none'
+              })
+            }
+          })
+        },
+        fail: () => {
+          wx.hideLoading()
+          wx.showToast({
+            title: '微信登录失败，请重试',
+            icon: 'none'
+          })
         }
-
-        const { token, user } = data.data
-
-        // 3. 保存登录状态
-        app.setLoginState(user, token)
-
-        // 4. 关闭弹窗
-        this.hide()
-
-        // 5. 执行登录前的操作
-        if (this.data.pendingAction) {
-          this.data.pendingAction()
-        }
-
-        // 6. 通知页面刷新
-        this.triggerEvent('loginSuccess', { userInfo: user })
-
-        wx.showToast({
-          title: '登录成功',
-          icon: 'success'
-        })
-      } catch (error: any) {
-        wx.hideLoading()
-        wx.showToast({
-          title: error.message || '登录失败，请重试',
-          icon: 'none'
-        })
-      }
+      })
     }
   }
 })

@@ -18,7 +18,9 @@ export function isLoggedIn(): boolean {
  */
 export function requireLogin(callback?: () => void): boolean {
   if (app.globalData.isLoggedIn) {
-    callback?.()
+    if (callback) {
+      callback()
+    }
     return true
   }
 

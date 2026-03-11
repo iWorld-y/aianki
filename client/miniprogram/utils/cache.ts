@@ -44,7 +44,11 @@ function getCacheKey(key: string): string {
  */
 export function setCache<T>(key: string, data: T, expiresIn?: number): void {
   const configKey = key as keyof typeof CACHE_CONFIG
-  const cacheTime = expiresIn ?? CACHE_CONFIG[configKey] ?? 60
+  const cacheTime = expiresIn !== undefined
+    ? expiresIn
+    : CACHE_CONFIG[configKey] !== undefined
+      ? CACHE_CONFIG[configKey]
+      : 60
 
   if (cacheTime === -1) return // 不缓存
 
