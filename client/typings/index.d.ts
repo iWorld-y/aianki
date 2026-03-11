@@ -9,4 +9,5 @@ interface IAppOption {
   }
   userInfoReadyCallback?: WechatMiniprogram.GetUserInfoSuccessCallback
   checkLogin(): void
+  setLoginState(userInfo: WechatMiniprogram.UserInfo, token: string): void
 }

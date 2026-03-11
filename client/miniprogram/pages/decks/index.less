@@ -23,10 +23,52 @@ page {
   padding: 160rpx 0;
 }
 
-.empty-text {
-  font-size: 32rpx;
+.empty-icon {
+  font-size: 96rpx;
+  margin-bottom: 32rpx;
+}
+
+.empty-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 16rpx;
+}
+
+.empty-desc {
+  font-size: 28rpx;
   color: #64748b;
+  text-align: center;
   margin-bottom: 48rpx;
+  padding: 0 48rpx;
+  line-height: 1.5;
+}
+
+/* 游客模式空状态 */
+.guest-empty {
+  .empty-icon {
+    opacity: 0.8;
+  }
+}
+
+.login-hint-btn {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 24rpx 48rpx;
+  background-color: #5048e5;
+  color: #ffffff;
+  border-radius: 48rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+
+  .arrow {
+    font-size: 28rpx;
+  }
+
+  &:active {
+    opacity: 0.9;
+  }
 }
 
 .create-btn {
@@ -34,4 +76,28 @@ page {
   color: #ffffff;
   border-radius: 24rpx;
   padding: 24rpx 48rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  border: none;
+
+  &::after {
+    border: none;
+  }
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.deck-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.deck-item {
+  background-color: #ffffff;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
 }

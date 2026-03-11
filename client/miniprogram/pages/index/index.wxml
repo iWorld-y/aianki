@@ -6,7 +6,7 @@
   <view class="header">
     <view class="header-left">
       <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
-      <view class="greeting">{{greeting}}，{{userInfo.nickName}} ☀️</view>
+      <view class="greeting">{{greeting}} {{isGuestMode ? '' : '☀️'}}</view>
     </view>
     <view class="notification-btn" bindtap="onNotification">
       <text class="notification-icon">🔔</text>
@@ -14,12 +14,15 @@
   </view>
 
   <!-- 今日复习卡片 -->
-  <view class="review-card">
+  <view class="review-card {{isGuestMode ? 'guest' : ''}}">
     <view class="review-info">
-      <text class="review-label">来自 {{deckCount}} 个卡组</text>
+      <text class="review-label">
+        {{isGuestMode ? '登录后查看' : '来自 ' + deckCount + ' 个卡组'}}
+      </text>
       <text class="review-count">{{todayDueCount}}</text>
       <text class="review-title">今日待复习</text>
     </view>
+    
     <button class="start-btn" bindtap="onStartReview">
       <text class="btn-icon">▶</text>
       开始复习
@@ -29,30 +32,53 @@
   <!-- 卡组列表 -->
   <view class="decks-section">
     <view class="section-header">
-      <text class="section-title">我的卡组</text>
+      <text class="section-title">{{isGuestMode ? '示例卡组' : '我的卡组'}}</text>
       <text class="section-more" bindtap="onNavigateToDecks">查看全部</text>
     </view>
 
     <scroll-view class="decks-scroll" scroll-x>
       <view class="deck-list">
-        <view class="deck-card" wx:for="{{decks}}" wx:key="id" data-id="{{item.id}}" bindtap="onDeckTap">
-        <view class="deck-icon" style="background-color: {{item.bgColor}}; color: {{item.iconColor}}">
-          <text wx:if="{{item.icon === 'translate'}}">🌐</text>
-          <text wx:elif="{{item.icon === 'history'}}">📜</text>
-          <text wx:elif="{{item.icon === 'functions'}}">∑</text>
-          <text wx:else>📚</text>
+        <view 
+          class="deck-card {{isGuestMode ? 'guest' : ''}}" 
+          wx:for="{{decks}}" 
+          wx:key="id" 
+          data-id="{{item.id}}" 
+          bindtap="onDeckTap"
+        >
+          <view class="deck-icon" style="background-color: {{item.bgColor}}; color: {{item.iconColor}}">
+            <text wx:if="{{item.icon === 'translate'}}">🌐</text>
+            <text wx:elif="{{item.icon === 'history'}}">📜</text>
+            <text wx:elif="{{item.icon === 'functions'}}">∑</text>
+            <text wx:else>📚</text>
+          </view>
+          
+          <text class="deck-name">{{item.name}}</text>
+          <text class="deck-count">{{item.cardCount}}张卡片</text>
+          <view class="deck-badge" wx:if="{{!isGuestMode}}">{{item.dueCount}}张待复</view>
         </view>
-        <text class="deck-name">{{item.name}}</text>
-        <text class="deck-count">{{item.cardCount}}张卡片</text>
-        <view class="deck-badge">{{item.dueCount}}张待复</view>
-      </view>
 
-      <!-- 新建卡组 -->
-        <view class="deck-card deck-add" bindtap="onCreateDeck">
+        <!-- 新建卡组（仅登录后显示） -->
+        <view 
+          class="deck-card deck-add" 
+          bindtap="onCreateDeck"
+          wx:if="{{!isGuestMode}}"
+        >
           <view class="add-icon">
             <text>+</text>
           </view>
           <text class="add-text">新建卡组</text>
+        </view>
+        
+        <!-- 游客模式登录提示 -->
+        <view 
+          class="deck-card deck-login" 
+          bindtap="onCreateDeck"
+          wx:if="{{isGuestMode}}"
+        >
+          <view class="login-icon">
+            <text>🔐</text>
+          </view>
+          <text class="login-text">登录后创建</text>
         </view>
       </view>
     </scroll-view>
@@ -63,3 +89,6 @@
 <view class="camera-btn" bindtap="onOpenCamera">
   <text class="camera-icon">📷</text>
 </view>
+
+<!-- 登录弹窗 -->
+<login-modal id="loginModal" bind:loginSuccess="onLoginSuccess" />

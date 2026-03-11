@@ -1,0 +1,44 @@
+<!--components/login-modal/login-modal.wxml-->
+<view class="login-modal {{visible ? 'show' : ''}}">
+  <view class="modal-mask" bindtap="onCancel"></view>
+  <view class="modal-content">
+    <view class="modal-header">
+      <view class="app-icon">🧠</view>
+      <text class="title">欢迎使用 AI记忆卡</text>
+    </view>
+    
+    <view class="modal-body">
+      <text class="subtitle">登录后可使用全部功能</text>
+      <view class="feature-list">
+        <view class="feature-item">
+          <text class="icon">📝</text>
+          <text class="text">创建个人卡组</text>
+        </view>
+        <view class="feature-item">
+          <text class="icon">📷</text>
+          <text class="text">拍照智能识卡</text>
+        </view>
+        <view class="feature-item">
+          <text class="icon">📊</text>
+          <text class="text">记录学习进度</text>
+        </view>
+        <view class="feature-item">
+          <text class="icon">☁️</text>
+          <text class="text">数据云端同步</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="modal-footer">
+      <button 
+        class="login-btn" 
+        open-type="getUserInfo" 
+        bind:getuserinfo="onGetUserInfo"
+      >
+        <text class="wechat-icon">💬</text>
+        微信一键登录
+      </button>
+      <view class="cancel-btn" bindtap="onCancel">暂不登录</view>
+    </view>
+  </view>
+</view>
