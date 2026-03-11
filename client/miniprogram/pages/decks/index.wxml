@@ -3,9 +3,35 @@
 
 <scroll-view class="scrollarea" scroll-y type="list">
   <view class="container">
-    <view class="empty" wx:if="{{decks.length === 0}}">
-      <text class="empty-text">还没有卡组</text>
+    <!-- 游客模式空状态 -->
+    <view class="empty guest-empty" wx:if="{{isGuestMode}}">
+      <view class="empty-icon">📚</view>
+      <text class="empty-title">登录后查看卡组</text>
+      <text class="empty-desc">登录后可创建和管理个人卡组，开始学习之旅</text>
+      
+      <view class="login-hint-btn" bindtap="onCreateDeck">
+        <text>立即登录</text>
+        <text class="arrow">→</text>
+      </view>
+    </view>
+    
+    <!-- 登录后空状态 -->
+    <view class="empty" wx:if="{{!isGuestMode && decks.length === 0}}">
+      <view class="empty-icon">📝</view>
+      <text class="empty-title">还没有卡组</text>
+      <text class="empty-desc">创建你的第一个卡组，开始高效学习</text>
+      
       <button class="create-btn" bindtap="onCreateDeck">创建卡组</button>
+    </view>
+    
+    <!-- 卡组列表（登录后显示） -->
+    <view class="deck-list" wx:if="{{!isGuestMode && decks.length > 0}}">
+      <view class="deck-item" wx:for="{{decks}}" wx:key="id">
+        <text>{{item.name}}</text>
+      </view>
     </view>
   </view>
 </scroll-view>
+
+<!-- 登录弹窗 -->
+<login-modal id="loginModal" bind:loginSuccess="onLoginSuccess" />

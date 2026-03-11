@@ -1,40 +1,134 @@
 // profile/index.ts
-// 个人中心页面
+// 个人中心页面 - 支持游客/登录模式
+
+import { requireLogin, logout } from '../../utils/auth'
 
 const app = getApp<IAppOption>()
+const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
 
 Component({
   data: {
-    userInfo: null as any,
+    userInfo: {
+      avatarUrl: defaultAvatarUrl,
+      nickName: '访客'
+    },
     isLoggedIn: false,
+    isGuestMode: true,
     stats: {
-      totalCards: 0,
-      reviewedCards: 0,
-      streakDays: 0
+      totalCards: '--',
+      reviewedCards: '--',
+      streakDays: '--'
     }
   },
 
   lifetimes: {
     attached() {
-      this.loadUserInfo()
+      this.checkLoginState()
+    }
+  },
+
+  pageLifetimes: {
+    show() {
+      this.checkLoginState()
     }
   },
 
   methods: {
-    loadUserInfo() {
-      if (app.globalData.userInfo) {
+    /**
+     * 检查登录状态
+     */
+    checkLoginState() {
+      const isLoggedIn = app.globalData.isLoggedIn
+      const userInfo = app.globalData.userInfo
+
+      this.setData({
+        isLoggedIn,
+        isGuestMode: !isLoggedIn
+      })
+
+      if (isLoggedIn && userInfo) {
         this.setData({
-          userInfo: app.globalData.userInfo,
-          isLoggedIn: app.globalData.isLoggedIn
+          userInfo: userInfo
+        })
+        this.loadStats()
+      } else {
+        this.setData({
+          userInfo: {
+            avatarUrl: defaultAvatarUrl,
+            nickName: '访客'
+          },
+          stats: {
+            totalCards: '--',
+            reviewedCards: '--',
+            streakDays: '--'
+          }
         })
       }
     },
 
+    /**
+     * 加载统计数据
+     */
+    loadStats() {
+      // TODO: 从 API 加载真实统计数据
+      this.setData({
+        stats: {
+          totalCards: 65,
+          reviewedCards: 128,
+          streakDays: 7
+        }
+      })
+    },
+
+    /**
+     * 登录成功后刷新
+     */
+    onLoginSuccess() {
+      this.checkLoginState()
+    },
+
+    /**
+     * 点击登录
+     */
     onLogin() {
-      // TODO: 实现登录逻辑
+      requireLogin()
+    },
+
+    /**
+     * 退出登录
+     */
+    onLogout() {
+      logout()
+    },
+
+    /**
+     * 编辑资料
+     */
+    onEditProfile() {
       wx.showToast({
         title: '功能开发中',
         icon: 'none'
+      })
+    },
+
+    /**
+     * 设置页面
+     */
+    onSettings() {
+      wx.showToast({
+        title: '功能开发中',
+        icon: 'none'
+      })
+    },
+
+    /**
+     * 关于我们
+     */
+    onAbout() {
+      wx.showModal({
+        title: '关于 AI记忆卡',
+        content: 'AI记忆卡 v1.0.0\n基于艾宾浩斯遗忘曲线的智能记忆工具',
+        showCancel: false
       })
     }
   }

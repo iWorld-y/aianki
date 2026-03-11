@@ -83,6 +83,11 @@ page {
   margin: 16rpx 0;
 }
 
+/* 游客模式复习卡片样式 */
+.review-card.guest .review-count {
+  color: #cbd5e1;
+}
+
 .review-title {
   font-size: 28rpx;
   color: #64748b;
@@ -136,21 +141,28 @@ page {
 }
 
 .decks-scroll {
-  display: flex;
   white-space: nowrap;
   margin: 0 -48rpx;
   padding: 0 48rpx 32rpx 48rpx;
 }
 
+.deck-list {
+  display: flex;
+  align-items: flex-start;
+}
+
 .deck-card {
   flex-shrink: 0;
   width: 320rpx;
+  height: auto;
   background-color: #ffffff;
   border-radius: 24rpx;
   padding: 32rpx;
   margin-right: 32rpx;
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
   border: 2rpx solid #f1f5f9;
+  align-self: flex-start;
+  box-sizing: border-box;
 }
 
 .deck-icon {
@@ -216,6 +228,43 @@ page {
 }
 
 .add-text {
+  font-size: 28rpx;
+  color: #64748b;
+}
+
+/* 游客模式卡组卡片样式 */
+.deck-card.guest {
+  opacity: 0.8;
+}
+
+.deck-card.guest .deck-icon {
+  opacity: 0.7;
+}
+
+/* 游客登录提示卡片 */
+.deck-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  border: 4rpx dashed #e2e8f0;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.login-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background-color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+}
+
+.login-text {
   font-size: 28rpx;
   color: #64748b;
 }
