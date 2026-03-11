@@ -1,0 +1,32 @@
+<!--review/index.wxml-->
+<navigation-bar title="复习" back="{{true}}" color="black" background="#f6f6f8"></navigation-bar>
+
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <view class="empty" wx:if="{{cards.length === 0}}">
+      <text class="empty-text">🎉 太棒了！今天没有需要复习的卡片</text>
+    </view>
+    
+    <view class="card-wrapper" wx:else>
+      <view class="card">
+        <text class="card-content">{{cards[currentIndex].front}}</text>
+      </view>
+      
+      <button class="show-btn" wx:if="{{!showAnswer}}" bindtap="onShowAnswer">
+        显示答案
+      </button>
+      
+      <view class="answer-section" wx:else>
+        <view class="answer-card">
+          <text class="answer-content">{{cards[currentIndex].back}}</text>
+        </view>
+        
+        <view class="rating-buttons">
+          <button class="rating-btn rating-hard" data-rating="1" bindtap="onAnswer">忘记</button>
+          <button class="rating-btn rating-medium" data-rating="2" bindtap="onAnswer">模糊</button>
+          <button class="rating-btn rating-easy" data-rating="3" bindtap="onAnswer">简单</button>
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view>

@@ -1,0 +1,11 @@
+<!--decks/index.wxml-->
+<navigation-bar title="卡组库" back="{{false}}" color="black" background="#f6f6f8"></navigation-bar>
+
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <view class="empty" wx:if="{{decks.length === 0}}">
+      <text class="empty-text">还没有卡组</text>
+      <button class="create-btn" bindtap="onCreateDeck">创建卡组</button>
+    </view>
+  </view>
+</scroll-view>

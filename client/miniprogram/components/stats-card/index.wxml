@@ -1,0 +1,16 @@
+<view class="stats-card">
+  <view class="stats-card__item">
+    <text class="stats-card__value">{{loading ? '...' : totalCards}}</text>
+    <text class="stats-card__label">总卡片</text>
+  </view>
+  <view class="stats-card__divider"></view>
+  <view class="stats-card__item">
+    <text class="stats-card__value">{{loading ? '...' : todayReviewed}}</text>
+    <text class="stats-card__label">今日已复习</text>
+  </view>
+  <view class="stats-card__divider"></view>
+  <view class="stats-card__item">
+    <text class="stats-card__value">{{loading ? '...' : streakDays}}</text>
+    <text class="stats-card__label">连续学习</text>
+  </view>
+</view>

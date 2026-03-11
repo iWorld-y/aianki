@@ -1,0 +1,241 @@
+<!doctype html>
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#5048e5",
+              "background-light": "#f6f6f8",
+              "background-dark": "#121121",
+            },
+            fontFamily: {
+              display: ["Lexend", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "1rem",
+              xl: "1.5rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Lexend", sans-serif;
+      }
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+    <style>
+      body {
+        min-height: max(884px, 100dvh);
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col"
+  >
+    <header
+      class="flex items-center justify-between px-6 pt-8 pb-4 bg-background-light dark:bg-background-dark"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="size-10 rounded-full overflow-hidden border-2 border-primary/20"
+        >
+          <img
+            class="w-full h-full object-cover"
+            data-alt="User profile avatar showing a smiling person"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBb-MZvqUIwL18GOYsQTTr0ZN25Bc9ENDRSLUjLzHkNSxQXhfjGpYlHoIO0Qq-pKCco2uvjwga7MJ3vNwk2p4hm5OnkcxBw5bHbyUinWDRA2Bwh93-QoP6XJdH6M036aPweZJvtG99gSSf6MjJ-CIWuqatwx_XWDq627reOUD379IOO1di4WhUQBZvgJDETTeARJ-vZXc2-9gI02lc86CTkLIZaya5h_K9NHxn33DUbZQ6ieJ9psxoGZzIp6vPv62Vu5l8n7eB2P5w"
+          />
+        </div>
+        <h1 class="text-lg font-bold tracking-tight">
+          早安，今天开始复习吧 ☀️
+        </h1>
+      </div>
+      <button
+        class="flex items-center justify-center size-10 rounded-full bg-white dark:bg-slate-800 shadow-sm text-slate-600 dark:text-slate-300"
+      >
+        <span class="material-symbols-outlined">notifications</span>
+      </button>
+    </header>
+    <main class="flex-1 px-6 space-y-8">
+      <section class="mt-4">
+        <div
+          class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 dark:border-slate-700"
+        >
+          <div class="flex flex-col items-center text-center space-y-1">
+            <span class="text-primary/60 text-sm font-medium"
+              >来自 3 个卡组</span
+            >
+            <span class="text-6xl font-bold text-slate-900 dark:text-white py-2"
+              >12</span
+            >
+            <span class="text-slate-500 dark:text-slate-400 text-base mb-6"
+              >今日待复习</span
+            >
+          </div>
+          <button
+            class="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-4 rounded-xl transition-colors flex items-center justify-center gap-2"
+          >
+            <span class="material-symbols-outlined text-xl">play_circle</span>
+            开始复习
+          </button>
+        </div>
+      </section>
+      <section class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-bold">我的卡组</h2>
+          <button class="text-primary text-sm font-semibold">查看全部</button>
+        </div>
+        <div class="flex gap-4 overflow-x-auto hide-scrollbar pb-4 -mx-6 px-6">
+          <div
+            class="flex-shrink-0 w-40 bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-700"
+          >
+            <div
+              class="size-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4"
+            >
+              <span class="material-symbols-outlined text-primary"
+                >translate</span
+              >
+            </div>
+            <p class="font-bold text-slate-900 dark:text-white truncate">
+              英语单词
+            </p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              20张卡片
+            </p>
+            <div
+              class="mt-3 inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold"
+            >
+              5张待复
+            </div>
+          </div>
+          <div
+            class="flex-shrink-0 w-40 bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-700"
+          >
+            <div
+              class="size-12 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center mb-4 text-orange-600"
+            >
+              <span class="material-symbols-outlined">history_edu</span>
+            </div>
+            <p class="font-bold text-slate-900 dark:text-white truncate">
+              世界历史
+            </p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              15张卡片
+            </p>
+            <div
+              class="mt-3 inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold"
+            >
+              2张待复
+            </div>
+          </div>
+          <div
+            class="flex-shrink-0 w-40 bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border border-slate-100 dark:border-slate-700"
+          >
+            <div
+              class="size-12 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-4 text-emerald-600"
+            >
+              <span class="material-symbols-outlined">functions</span>
+            </div>
+            <p class="font-bold text-slate-900 dark:text-white truncate">
+              数学公式
+            </p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              30张卡片
+            </p>
+            <div
+              class="mt-3 inline-flex items-center px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold"
+            >
+              5张待复
+            </div>
+          </div>
+          <button
+            class="flex-shrink-0 w-40 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl flex flex-col items-center justify-center gap-2 p-4 group hover:border-primary transition-colors"
+          >
+            <div
+              class="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:bg-primary/10"
+            >
+              <span
+                class="material-symbols-outlined text-slate-400 group-hover:text-primary"
+                >add</span
+              >
+            </div>
+            <span
+              class="text-sm font-medium text-slate-500 group-hover:text-primary"
+              >新建卡组</span
+            >
+          </button>
+        </div>
+      </section>
+    </main>
+    <div class="fixed bottom-8 right-6">
+      <button
+        class="size-16 rounded-full bg-primary text-white shadow-lg shadow-primary/30 flex items-center justify-center hover:scale-105 transition-transform"
+      >
+        <span class="material-symbols-outlined text-3xl">photo_camera</span>
+      </button>
+    </div>
+    <nav
+      class="bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 px-6 py-3"
+    >
+      <div class="flex justify-between items-center max-w-md mx-auto">
+        <a class="flex flex-col items-center gap-1 text-primary" href="#">
+          <span
+            class="material-symbols-outlined"
+            style="font-variation-settings: &quot;FILL&quot; 1"
+            >home</span
+          >
+          <span class="text-[10px] font-bold">首页</span>
+        </a>
+        <a
+          class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary"
+          href="#"
+        >
+          <span class="material-symbols-outlined">library_books</span>
+          <span class="text-[10px] font-medium">图书馆</span>
+        </a>
+        <a
+          class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary"
+          href="#"
+        >
+          <span class="material-symbols-outlined">bar_chart</span>
+          <span class="text-[10px] font-medium">统计</span>
+        </a>
+        <a
+          class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary"
+          href="#"
+        >
+          <span class="material-symbols-outlined">settings</span>
+          <span class="text-[10px] font-medium">设置</span>
+        </a>
+      </div>
+    </nav>
+  </body>
+</html>

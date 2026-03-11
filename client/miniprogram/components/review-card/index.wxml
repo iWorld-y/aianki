@@ -1,0 +1,12 @@
+<view class="review-card">
+  <view class="review-card__content">
+    <text class="review-card__title">今日待复习</text>
+    <text class="review-card__count">{{loading ? '...' : count}} 张</text>
+  </view>
+  <button 
+    class="review-card__button"
+    bindtap="onStartReview"
+    disabled="{{count === 0}}">
+    开始复习
+  </button>
+</view>

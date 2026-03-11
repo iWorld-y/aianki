@@ -1,0 +1,25 @@
+<!--create/index.wxml-->
+<navigation-bar title="创建卡组" back="{{true}}" color="black" background="#f6f6f8"></navigation-bar>
+
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <view class="form">
+      <view class="form-item">
+        <text class="label">卡组名称</text>
+        <input class="input" placeholder="请输入卡组名称" value="{{name}}" bindinput="onNameInput" />
+      </view>
+      
+      <view class="form-item">
+        <text class="label">卡组描述</text>
+        <textarea class="textarea" placeholder="请输入卡组描述（选填）" value="{{description}}" bindinput="onDescInput" />
+      </view>
+      
+      <view class="form-item">
+        <text class="label">图标</text>
+        <input class="input" placeholder="选择图标" value="{{icon}}" bindinput="onIconChange" />
+      </view>
+      
+      <button class="submit-btn" bindtap="onSubmit">创建卡组</button>
+    </view>
+  </view>
+</scroll-view>

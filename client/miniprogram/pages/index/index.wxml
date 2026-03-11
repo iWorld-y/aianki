@@ -1,28 +1,63 @@
 <!--index.wxml-->
-<navigation-bar title="Weixin" back="{{false}}" color="black" background="#FFF"></navigation-bar>
+<navigation-bar title="首页" back="{{false}}" color="black" background="#f6f6f8"></navigation-bar>
+
 <scroll-view class="scrollarea" scroll-y type="list">
-  <view class="container">
-    <view class="userinfo">
-      <block wx:if="{{canIUseNicknameComp && !hasUserInfo}}">
-        <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
-          <image class="avatar" src="{{userInfo.avatarUrl}}"></image>
-        </button>
-        <view class="nickname-wrapper">
-          <text class="nickname-label">昵称</text>
-          <input type="nickname" class="nickname-input" placeholder="请输入昵称" bind:change="onInputChange" />
-        </view>
-      </block>
-      <block wx:elif="{{!hasUserInfo}}">
-        <button wx:if="{{canIUseGetUserProfile}}" bindtap="getUserProfile"> 获取头像昵称 </button>
-        <view wx:else> 请使用2.10.4及以上版本基础库 </view>
-      </block>
-      <block wx:else>
-        <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
-        <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-      </block>
+  <!-- 头部 -->
+  <view class="header">
+    <view class="header-left">
+      <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+      <view class="greeting">{{greeting}}，{{userInfo.nickName}} ☀️</view>
     </view>
-    <view class="usermotto">
-      <text class="user-motto">{{motto}}</text>
+    <view class="notification-btn" bindtap="onNotification">
+      <text class="notification-icon">🔔</text>
     </view>
   </view>
+
+  <!-- 今日复习卡片 -->
+  <view class="review-card">
+    <view class="review-info">
+      <text class="review-label">来自 {{deckCount}} 个卡组</text>
+      <text class="review-count">{{todayDueCount}}</text>
+      <text class="review-title">今日待复习</text>
+    </view>
+    <button class="start-btn" bindtap="onStartReview">
+      <text class="btn-icon">▶</text>
+      开始复习
+    </button>
+  </view>
+
+  <!-- 卡组列表 -->
+  <view class="decks-section">
+    <view class="section-header">
+      <text class="section-title">我的卡组</text>
+      <text class="section-more" bindtap="onNavigateToDecks">查看全部</text>
+    </view>
+
+    <scroll-view class="decks-scroll" scroll-x enable-flex>
+      <view class="deck-card" wx:for="{{decks}}" wx:key="id" data-id="{{item.id}}" bindtap="onDeckTap">
+        <view class="deck-icon" style="background-color: {{item.bgColor}}; color: {{item.iconColor}}">
+          <text wx:if="{{item.icon === 'translate'}}">🌐</text>
+          <text wx:elif="{{item.icon === 'history'}}">📜</text>
+          <text wx:elif="{{item.icon === 'functions'}}">∑</text>
+          <text wx:else>📚</text>
+        </view>
+        <text class="deck-name">{{item.name}}</text>
+        <text class="deck-count">{{item.cardCount}}张卡片</text>
+        <view class="deck-badge">{{item.dueCount}}张待复</view>
+      </view>
+
+      <!-- 新建卡组 -->
+      <view class="deck-card deck-add" bindtap="onCreateDeck">
+        <view class="add-icon">
+          <text>+</text>
+        </view>
+        <text class="add-text">新建卡组</text>
+      </view>
+    </scroll-view>
+  </view>
 </scroll-view>
+
+<!-- 悬浮拍照按钮 -->
+<view class="camera-btn" bindtap="onOpenCamera">
+  <text class="camera-icon">📷</text>
+</view>

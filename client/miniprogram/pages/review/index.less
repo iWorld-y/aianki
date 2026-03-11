@@ -1,0 +1,113 @@
+/** review/index.less **/
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f6f6f8;
+}
+
+.scrollarea {
+  flex: 1;
+  overflow-y: hidden;
+}
+
+.container {
+  padding: 48rpx;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 160rpx 0;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #64748b;
+  text-align: center;
+}
+
+.card-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: 32rpx;
+  padding: 80rpx 48rpx;
+  min-height: 400rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 16rpx 60rpx rgba(0, 0, 0, 0.04);
+  margin-bottom: 48rpx;
+}
+
+.card-content {
+  font-size: 48rpx;
+  color: #0f172a;
+  text-align: center;
+}
+
+.show-btn {
+  background-color: #5048e5;
+  color: #ffffff;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  font-size: 32rpx;
+}
+
+.answer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 32rpx;
+}
+
+.answer-card {
+  background-color: rgba(80, 72, 229, 0.1);
+  border-radius: 32rpx;
+  padding: 48rpx;
+  border: 2rpx dashed #5048e5;
+}
+
+.answer-content {
+  font-size: 40rpx;
+  color: #5048e5;
+  text-align: center;
+}
+
+.rating-buttons {
+  display: flex;
+  gap: 24rpx;
+  justify-content: center;
+}
+
+.rating-btn {
+  flex: 1;
+  border-radius: 24rpx;
+  padding: 24rpx;
+  font-size: 28rpx;
+  border: none;
+}
+
+.rating-hard {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.rating-medium {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.rating-easy {
+  background-color: #d1fae5;
+  color: #059669;
+}

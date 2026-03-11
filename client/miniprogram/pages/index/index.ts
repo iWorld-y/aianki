@@ -1,54 +1,127 @@
 // index.ts
-// 获取应用实例
-const app = getApp<IAppOption>()
+// 首页 - 展示复习统计和卡组列表
+
 const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
+
+interface Deck {
+  id: string
+  name: string
+  icon: string
+  cardCount: number
+  dueCount: number
+  bgColor: string
+  iconColor: string
+}
 
 Component({
   data: {
-    motto: 'Hello World',
     userInfo: {
       avatarUrl: defaultAvatarUrl,
-      nickName: '',
+      nickName: '学习者',
     },
-    hasUserInfo: false,
-    canIUseGetUserProfile: wx.canIUse('getUserProfile'),
-    canIUseNicknameComp: wx.canIUse('input.type.nickname'),
+    greeting: '早安',
+    todayDueCount: 12,
+    deckCount: 3,
+    decks: [
+      {
+        id: '1',
+        name: '英语单词',
+        icon: 'translate',
+        cardCount: 20,
+        dueCount: 5,
+        bgColor: 'rgba(80, 72, 229, 0.1)',
+        iconColor: '#5048e5'
+      },
+      {
+        id: '2',
+        name: '世界历史',
+        icon: 'history',
+        cardCount: 15,
+        dueCount: 2,
+        bgColor: 'rgba(249, 115, 22, 0.1)',
+        iconColor: '#f97316'
+      },
+      {
+        id: '3',
+        name: '数学公式',
+        icon: 'functions',
+        cardCount: 30,
+        dueCount: 5,
+        bgColor: 'rgba(16, 185, 129, 0.1)',
+        iconColor: '#10b981'
+      }
+    ] as Deck[],
   },
+
+  lifetimes: {
+    attached() {
+      this.updateGreeting()
+      this.loadUserInfo()
+    }
+  },
+
   methods: {
-    // 事件处理函数
-    bindViewTap() {
+    updateGreeting() {
+      const hour = new Date().getHours()
+      let greeting = '早安'
+      if (hour >= 12 && hour < 18) {
+        greeting = '下午好'
+      } else if (hour >= 18) {
+        greeting = '晚上好'
+      }
+      this.setData({ greeting })
+    },
+
+    loadUserInfo() {
+      const app = getApp<IAppOption>()
+      if (app.globalData.userInfo) {
+        this.setData({
+          userInfo: app.globalData.userInfo
+        })
+      }
+    },
+
+    onStartReview() {
       wx.navigateTo({
-        url: '../logs/logs',
+        url: '/pages/review/index'
       })
     },
-    onChooseAvatar(e: any) {
-      const { avatarUrl } = e.detail
-      const { nickName } = this.data.userInfo
-      this.setData({
-        "userInfo.avatarUrl": avatarUrl,
-        hasUserInfo: nickName && avatarUrl && avatarUrl !== defaultAvatarUrl,
+
+    onNavigateToDecks() {
+      wx.switchTab({
+        url: '/pages/decks/index'
       })
     },
-    onInputChange(e: any) {
-      const nickName = e.detail.value
-      const { avatarUrl } = this.data.userInfo
-      this.setData({
-        "userInfo.nickName": nickName,
-        hasUserInfo: nickName && avatarUrl && avatarUrl !== defaultAvatarUrl,
+
+    onCreateDeck() {
+      wx.navigateTo({
+        url: '/pages/create/index'
       })
     },
-    getUserProfile() {
-      // 推荐使用wx.getUserProfile获取用户信息，开发者每次通过该接口获取用户个人信息均需用户确认，开发者妥善保管用户快速填写的头像昵称，避免重复弹窗
-      wx.getUserProfile({
-        desc: '展示用户信息', // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
-        success: (res) => {
-          console.log(res)
-          this.setData({
-            userInfo: res.userInfo,
-            hasUserInfo: true
-          })
+
+    onOpenCamera() {
+      wx.chooseMedia({
+        count: 1,
+        mediaType: ['image'],
+        sourceType: ['camera'],
+        success(res) {
+          console.log('Camera success:', res)
         }
       })
     },
-  },
+
+    onNotification() {
+      wx.showToast({
+        title: '暂无新通知',
+        icon: 'none'
+      })
+    },
+
+    onDeckTap(e: any) {
+      const { id } = e.currentTarget.dataset
+      wx.navigateTo({
+        url: `/pages/decks/index?id=${id}`
+      })
+    }
+  }
 })
