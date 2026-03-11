@@ -12,7 +12,7 @@ page {
 }
 
 .container {
-  padding: 48rpx;
+  padding: 32rpx;
 }
 
 .form {
@@ -26,12 +26,21 @@ page {
   margin-bottom: 48rpx;
 }
 
+.form-item:last-child {
+  margin-bottom: 0;
+}
+
 .label {
   display: block;
   font-size: 28rpx;
   font-weight: 600;
   color: #0f172a;
   margin-bottom: 16rpx;
+}
+
+.required {
+  color: #ef4444;
+  margin-left: 4rpx;
 }
 
 .input {
@@ -41,6 +50,11 @@ page {
   border-radius: 16rpx;
   padding: 0 24rpx;
   font-size: 32rpx;
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: #94a3b8;
 }
 
 .textarea {
@@ -50,8 +64,53 @@ page {
   border-radius: 16rpx;
   padding: 24rpx;
   font-size: 32rpx;
+  box-sizing: border-box;
 }
 
+.textarea::placeholder {
+  color: #94a3b8;
+}
+
+/* 图标选择 */
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16rpx;
+}
+
+.icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24rpx 16rpx;
+  background-color: #f6f6f8;
+  border-radius: 16rpx;
+  border: 4rpx solid transparent;
+  transition: all 0.2s;
+}
+
+.icon-item.active {
+  background-color: rgba(80, 72, 229, 0.1);
+  border-color: #5048e5;
+}
+
+.icon-emoji {
+  font-size: 48rpx;
+  margin-bottom: 8rpx;
+}
+
+.icon-name {
+  font-size: 24rpx;
+  color: #64748b;
+}
+
+.icon-item.active .icon-name {
+  color: #5048e5;
+  font-weight: 600;
+}
+
+/* 提交按钮 */
 .submit-btn {
   width: 100%;
   height: 96rpx;
@@ -62,8 +121,22 @@ page {
   font-weight: 600;
   margin-top: 32rpx;
   border: none;
+  opacity: 1;
+  transition: opacity 0.2s;
 }
 
 .submit-btn::after {
   border: none;
+}
+
+.submit-btn[disabled] {
+  opacity: 0.5;
+}
+
+.submit-btn.submitting {
+  opacity: 0.7;
+}
+
+.submit-btn:not([disabled]):active {
+  opacity: 0.9;
 }

@@ -1,32 +1,98 @@
 <!--review/index.wxml-->
 <navigation-bar title="复习" back="{{true}}" color="black" background="#f6f6f8"></navigation-bar>
 
-<scroll-view class="scrollarea" scroll-y type="list">
-  <view class="container">
-    <view class="empty" wx:if="{{cards.length === 0}}">
-      <text class="empty-text">🎉 太棒了！今天没有需要复习的卡片</text>
+<view class="page-container">
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载复习卡片中...</text>
+  </view>
+
+  <!-- 错误状态 -->
+  <view class="error-container" wx:elif="{{error}}">
+    <text class="error-icon">⚠️</text>
+    <text class="error-text">{{error}}</text>
+    <button class="retry-btn" bindtap="onRetry">重新加载</button>
+  </view>
+
+  <!-- 完成页面 -->
+  <view class="completion-container" wx:elif="{{completed}}">
+    <view class="celebration-icon">🎉</view>
+    <text class="completion-title">今日复习完成！</text>
+    
+    <view class="completion-stats">
+      <view class="completion-stat">
+        <text class="stat-value">{{reviewCount}}</text>
+        <text class="stat-label">完成卡片</text>
+      </view>
     </view>
     
-    <view class="card-wrapper" wx:else>
-      <view class="card">
+    <button class="home-btn" bindtap="onGoHome">返回首页</button>
+  </view>
+
+  <!-- 无待复习卡片 -->
+  <view class="empty-container" wx:elif="{{cards.length === 0}}">
+    <view class="empty-icon">🎉</view>
+    <text class="empty-title">今日已完成</text>
+    <text class="empty-desc">太棒了！今天没有需要复习的卡片</text>
+    
+    <button class="home-btn" bindtap="onGoHome">返回首页</button>
+  </view>
+
+  <!-- 复习界面 -->
+  <view class="review-container" wx:else>
+    <!-- 进度条 -->
+    <view class="progress-section">
+      <view class="progress-bar">
+        <view class="progress-fill" style="width: {{getProgress()}}%"></view>
+      </view>
+      <view class="progress-info">
+        <text class="progress-text">{{currentIndex + 1}} / {{totalCount}}</text>
+        <text class="remaining-text">还剩 {{getRemainingCount()}} 张</text>
+      </view>
+    </view>
+
+    <!-- 卡片区域 -->
+    <view class="card-section">
+      <view class="deck-tag" wx:if="{{cards[currentIndex].deckName}}">
+        {{cards[currentIndex].deckName}}
+      </view>
+
+      <view class="card front-card">
         <text class="card-content">{{cards[currentIndex].front}}</text>
       </view>
-      
-      <button class="show-btn" wx:if="{{!showAnswer}}" bindtap="onShowAnswer">
-        显示答案
-      </button>
-      
-      <view class="answer-section" wx:else>
-        <view class="answer-card">
-          <text class="answer-content">{{cards[currentIndex].back}}</text>
+
+      <view class="answer-section" wx:if="{{showAnswer}}">
+        <view class="card back-card">
+          <text class="card-content">{{cards[currentIndex].back}}</text>
         </view>
-        
+
         <view class="rating-buttons">
-          <button class="rating-btn rating-hard" data-rating="1" bindtap="onAnswer">忘记</button>
-          <button class="rating-btn rating-medium" data-rating="2" bindtap="onAnswer">模糊</button>
-          <button class="rating-btn rating-easy" data-rating="3" bindtap="onAnswer">简单</button>
+          <button class="rating-btn rating-again" data-rating="1" bindtap="onAnswer">
+            <text class="rating-label">忘记</text>
+            <text class="rating-hint">1分钟内</text>
+          </button>
+          
+          <button class="rating-btn rating-hard" data-rating="2" bindtap="onAnswer">
+            <text class="rating-label">困难</text>
+            <text class="rating-hint">6分钟内</text>
+          </button>
+          
+          <button class="rating-btn rating-good" data-rating="3" bindtap="onAnswer">
+            <text class="rating-label">良好</text>
+            <text class="rating-hint">10分钟内</text>
+          </button>
+          
+          <button class="rating-btn rating-easy" data-rating="4" bindtap="onAnswer">
+            <text class="rating-label">简单</text>
+            <text class="rating-hint">4天内</text>
+          </button>
         </view>
+      </view>
+
+      <view class="show-answer-section" wx:if="{{!showAnswer}}">
+        <button class="show-answer-btn" bindtap="onShowAnswer">显示答案</button>
       </view>
     </view>
   </view>
-</scroll-view>
+</view>

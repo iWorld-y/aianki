@@ -17,15 +17,15 @@
   <view class="review-card {{isGuestMode ? 'guest' : ''}}">
     <view class="review-info">
       <text class="review-label">
-        {{isGuestMode ? '登录后查看' : '来自 ' + deckCount + ' 个卡组'}}
+        {{isGuestMode ? '登录后查看' : (loading.todayDue ? '加载中...' : '来自 ' + deckCount + ' 个卡组')}}
       </text>
-      <text class="review-count">{{todayDueCount}}</text>
+      <text class="review-count">{{loading.todayDue ? '--' : todayDueCount}}</text>
       <text class="review-title">今日待复习</text>
     </view>
     
-    <button class="start-btn" bindtap="onStartReview">
+    <button class="start-btn" bindtap="onStartReview" disabled="{{loading.todayDue}}">
       <text class="btn-icon">▶</text>
-      开始复习
+      {{loading.todayDue ? '加载中...' : '开始复习'}}
     </button>
   </view>
 
@@ -36,7 +36,22 @@
       <text class="section-more" bindtap="onNavigateToDecks">查看全部</text>
     </view>
 
-    <scroll-view class="decks-scroll" scroll-x>
+    <!-- 加载状态 -->
+    <view class="loading-container" wx:if="{{loading.decks && decks.length === 0}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载卡组中...</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-container" wx:elif="{{!isGuestMode && !loading.decks && decks.length === 0}}">
+      <text class="empty-icon">📚</text>
+      <text class="empty-title">还没有卡组</text>
+      <text class="empty-desc">创建你的第一个卡组，开始学习吧！</text>
+      <button class="empty-btn" bindtap="onCreateDeck">创建卡组</button>
+    </view>
+
+    <!-- 卡组列表 -->
+    <scroll-view class="decks-scroll" scroll-x wx:if="{{decks.length > 0}}">
       <view class="deck-list">
         <view 
           class="deck-card {{isGuestMode ? 'guest' : ''}}" 
@@ -49,12 +64,14 @@
             <text wx:if="{{item.icon === 'translate'}}">🌐</text>
             <text wx:elif="{{item.icon === 'history'}}">📜</text>
             <text wx:elif="{{item.icon === 'functions'}}">∑</text>
+            <text wx:elif="{{item.icon === 'science'}}">🔬</text>
+            <text wx:elif="{{item.icon === 'art'}}">🎨</text>
             <text wx:else>📚</text>
           </view>
           
           <text class="deck-name">{{item.name}}</text>
           <text class="deck-count">{{item.cardCount}}张卡片</text>
-          <view class="deck-badge" wx:if="{{!isGuestMode}}">{{item.dueCount}}张待复</view>
+          <view class="deck-badge" wx:if="{{!isGuestMode && item.dueCount > 0}}">{{item.dueCount}}张待复</view>
         </view>
 
         <!-- 新建卡组（仅登录后显示） -->

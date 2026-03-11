@@ -16,7 +16,7 @@ export function isLoggedIn(): boolean {
  * @param callback 登录成功后执行的回调
  * @returns boolean 是否已登录（true 表示已登录或正在登录）
  */
-export function requireLogin(callback?: Function): boolean {
+export function requireLogin(callback?: () => void): boolean {
   if (app.globalData.isLoggedIn) {
     callback?.()
     return true
@@ -36,7 +36,9 @@ export function requireLogin(callback?: Function): boolean {
   if (loginModal) {
     loginModal.show(callback)
   } else {
-    console.warn('页面未找到登录弹窗组件，请确保已添加 <login-modal id="loginModal" />')
+    console.warn(
+      '页面未找到登录弹窗组件，请确保已添加 <login-modal id="loginModal" />'
+    )
   }
 
   return false
@@ -84,18 +86,12 @@ export function logout(): void {
     confirmColor: '#ef4444',
     success: (res) => {
       if (res.confirm) {
-        // 清除本地存储
-        wx.removeStorageSync('token')
-        wx.removeStorageSync('userInfo')
-
-        // 重置全局状态
-        app.globalData.token = ''
-        app.globalData.userInfo = undefined
-        app.globalData.isLoggedIn = false
+        // 调用 app 的 logout 方法统一处理
+        app.logout()
 
         wx.showToast({
           title: '已退出登录',
-          icon: 'success'
+          icon: 'success',
         })
 
         // 通知页面刷新
@@ -105,6 +101,6 @@ export function logout(): void {
           currentPage.setData({ isLoggedIn: false })
         }
       }
-    }
+    },
   })
 }
