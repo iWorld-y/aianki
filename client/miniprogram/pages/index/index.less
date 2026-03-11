@@ -136,21 +136,28 @@ page {
 }
 
 .decks-scroll {
-  display: flex;
   white-space: nowrap;
   margin: 0 -48rpx;
   padding: 0 48rpx 32rpx 48rpx;
 }
 
+.deck-list {
+  display: flex;
+  align-items: flex-start;
+}
+
 .deck-card {
   flex-shrink: 0;
   width: 320rpx;
+  height: auto;
   background-color: #ffffff;
   border-radius: 24rpx;
   padding: 32rpx;
   margin-right: 32rpx;
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
   border: 2rpx solid #f1f5f9;
+  align-self: flex-start;
+  box-sizing: border-box;
 }
 
 .deck-icon {

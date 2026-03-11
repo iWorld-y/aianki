@@ -33,8 +33,9 @@
       <text class="section-more" bindtap="onNavigateToDecks">查看全部</text>
     </view>
 
-    <scroll-view class="decks-scroll" scroll-x enable-flex>
-      <view class="deck-card" wx:for="{{decks}}" wx:key="id" data-id="{{item.id}}" bindtap="onDeckTap">
+    <scroll-view class="decks-scroll" scroll-x>
+      <view class="deck-list">
+        <view class="deck-card" wx:for="{{decks}}" wx:key="id" data-id="{{item.id}}" bindtap="onDeckTap">
         <view class="deck-icon" style="background-color: {{item.bgColor}}; color: {{item.iconColor}}">
           <text wx:if="{{item.icon === 'translate'}}">🌐</text>
           <text wx:elif="{{item.icon === 'history'}}">📜</text>
@@ -47,11 +48,12 @@
       </view>
 
       <!-- 新建卡组 -->
-      <view class="deck-card deck-add" bindtap="onCreateDeck">
-        <view class="add-icon">
-          <text>+</text>
+        <view class="deck-card deck-add" bindtap="onCreateDeck">
+          <view class="add-icon">
+            <text>+</text>
+          </view>
+          <text class="add-text">新建卡组</text>
         </view>
-        <text class="add-text">新建卡组</text>
       </view>
     </scroll-view>
   </view>
