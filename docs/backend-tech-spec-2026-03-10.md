@@ -343,7 +343,7 @@ auth:
   jwt_expire_days: 7
 
 wechat:
-  app_id: "xxx"
+  app_id: "wx1f0edb2d79745277"
   app_secret: "your-wechat-secret"
 
 ai:
