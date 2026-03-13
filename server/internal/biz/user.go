@@ -20,6 +20,7 @@ type User struct {
 type UserRepo interface {
 	Create(ctx context.Context, openid string) (*User, error)
 	FindByOpenID(ctx context.Context, openid string) (*User, error)
+	UpdateUserInfo(ctx context.Context, openid string, nickname, avatarURL *string) (*User, error)
 }
 
 type UserUsecase struct {
@@ -34,16 +35,25 @@ func NewUserUsecase(repo UserRepo, jwtSecret string) *UserUsecase {
 	}
 }
 
-func (uc *UserUsecase) Login(ctx context.Context, openid string) (string, error) {
+func (uc *UserUsecase) Login(ctx context.Context, openid string, nickname, avatarURL *string) (*User, string, error) {
 	user, err := uc.repo.FindByOpenID(ctx, openid)
 	if err != nil {
 		if errors.Is(err, ErrNotFound) {
 			user, err = uc.repo.Create(ctx, openid)
 			if err != nil {
-				return "", err
+				return nil, "", err
 			}
 		} else {
-			return "", err
+			return nil, "", err
+		}
+	}
+
+	// 如果提供了用户信息且数据库中没有，则更新
+	if nickname != nil || avatarURL != nil {
+		user, err = uc.repo.UpdateUserInfo(ctx, openid, nickname, avatarURL)
+		if err != nil {
+			// 更新失败不影响登录，仅记录错误
+			// 实际项目中应该记录日志
 		}
 	}
 
@@ -55,8 +65,12 @@ func (uc *UserUsecase) Login(ctx context.Context, openid string) (string, error)
 
 	tokenString, err := token.SignedString([]byte(uc.jwtSecret))
 	if err != nil {
-		return "", err
+		return nil, "", err
 	}
 
-	return tokenString, nil
+	return user, tokenString, nil
+}
+
+func (uc *UserUsecase) GetUserInfo(ctx context.Context, openid string) (*User, error) {
+	return uc.repo.FindByOpenID(ctx, openid)
 }

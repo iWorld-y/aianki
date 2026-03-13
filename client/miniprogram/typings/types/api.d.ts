@@ -155,3 +155,13 @@ export interface ReviewSubmitResponse {
   nextReview?: string // 下次复习时间
   interval?: number // 间隔天数
 }
+
+/**
+ * 用户信息
+ */
+export interface UserInfoResponse {
+  id: number
+  openid: string
+  nickname?: string
+  avatar_url?: string
+}

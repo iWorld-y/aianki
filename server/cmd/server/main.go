@@ -81,7 +81,7 @@ func main() {
 	reviewUc := biz.NewReviewUsecase(reviewRepo, 20) // 每日最多复习 20 张卡片
 
 	// 初始化服务层
-	userSvc := service.NewUserService(userUc, wechatCli)
+	userSvc := service.NewUserService(userUc, wechatCli, cfg.Auth.JWTSecret)
 	deckSvc := service.NewDeckService(deckUc, cfg.Auth.JWTSecret)
 	reviewSvc := service.NewReviewService(reviewUc, cfg.Auth.JWTSecret)
 
@@ -95,6 +95,7 @@ func main() {
 
 	// 用户认证
 	router.POST("/auth/login", userSvc.Login)
+	router.GET("/user/info", userSvc.GetUserInfo)
 
 	// 卡组管理
 	router.GET("/decks", deckSvc.GetDecks)
