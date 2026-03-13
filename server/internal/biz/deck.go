@@ -35,6 +35,8 @@ type DeckRepo interface {
 	GetUserDecks(ctx context.Context, userID int, sort string) ([]*Deck, error)
 	// CountUserDecks 统计用户卡组数量
 	CountUserDecks(ctx context.Context, userID int) (int, error)
+	// CreateDeck 创建新卡组
+	CreateDeck(ctx context.Context, userID int, name string) (*Deck, error)
 }
 
 type DeckUsecase struct {
@@ -58,4 +60,9 @@ func (uc *DeckUsecase) GetUserDecks(ctx context.Context, userID int, sort string
 // CountUserDecks 统计用户卡组数量
 func (uc *DeckUsecase) CountUserDecks(ctx context.Context, userID int) (int, error) {
 	return uc.repo.CountUserDecks(ctx, userID)
+}
+
+// CreateDeck 创建新卡组
+func (uc *DeckUsecase) CreateDeck(ctx context.Context, userID int, name string) (*Deck, error) {
+	return uc.repo.CreateDeck(ctx, userID, name)
 }

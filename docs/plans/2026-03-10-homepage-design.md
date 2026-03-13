@@ -310,7 +310,7 @@ auth:
   jwt_expire_days: 7
 
 wechat:
-  app_id: "wx1f0edb2d79745277"
+  app_id: "xxx"
   app_secret: "your-wechat-secret"
 
 ai:
@@ -542,7 +542,7 @@ client/miniprogram/
 ### 9.1 开发环境
 
 - 使用微信开发者工具打开 `client/miniprogram` 目录
-- 应用 ID 已配置: wx1f0edb2d79745277
+- 应用 ID 已配置: xxx
 - 后端代码放在 `server/` 目录
 - Docker Compose 配置放在项目根目录
 
