@@ -35,6 +35,21 @@ type DeckCardItem struct {
 	DueCount  int    `json:"dueCount"`
 }
 
+// CreateDeckRequest 创建卡组请求
+type CreateDeckRequest struct {
+	Name string `json:"name"`
+}
+
+// CreateDeckResponse 创建卡组响应
+type CreateDeckResponse struct {
+	Code    int    `json:"code"`
+	Message string `json:"message,omitempty"`
+	Data    struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	} `json:"data"`
+}
+
 func NewDeckService(uc *biz.DeckUsecase, jwtSecret string) *DeckService {
 	return &DeckService{
 		uc:        uc,
@@ -102,6 +117,64 @@ func (s *DeckService) GetDecks(ctx http.Context) error {
 		Code: 0,
 		Data: DecksData{
 			Decks: deckItems,
+		},
+	})
+}
+
+// CreateDeck 创建新卡组
+func (s *DeckService) CreateDeck(ctx http.Context) error {
+	// 从请求头中获取令牌
+	tokenString, err := auth.GetTokenFromHeader(ctx)
+	if err != nil {
+		return ctx.JSON(200, CreateDeckResponse{
+			Code:    401,
+			Message: "未授权: " + err.Error(),
+		})
+	}
+
+	// 解析令牌
+	claims, err := auth.ParseToken(tokenString, s.jwtSecret)
+	if err != nil {
+		return ctx.JSON(200, CreateDeckResponse{
+			Code:    401,
+			Message: "无效的令牌",
+		})
+	}
+
+	// 解析请求体
+	var req CreateDeckRequest
+	if err := ctx.Bind(&req); err != nil {
+		return ctx.JSON(200, CreateDeckResponse{
+			Code:    400,
+			Message: "请求参数错误: " + err.Error(),
+		})
+	}
+
+	// 验证卡组名称
+	if req.Name == "" {
+		return ctx.JSON(200, CreateDeckResponse{
+			Code:    400,
+			Message: "卡组名称不能为空",
+		})
+	}
+
+	// 创建卡组
+	deck, err := s.uc.CreateDeck(ctx, claims.UserID, req.Name)
+	if err != nil {
+		return ctx.JSON(200, CreateDeckResponse{
+			Code:    500,
+			Message: "创建卡组失败: " + err.Error(),
+		})
+	}
+
+	return ctx.JSON(200, CreateDeckResponse{
+		Code: 0,
+		Data: struct {
+			ID   int    `json:"id"`
+			Name string `json:"name"`
+		}{
+			ID:   deck.ID,
+			Name: deck.Name,
 		},
 	})
 }

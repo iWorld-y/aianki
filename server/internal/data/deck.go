@@ -75,6 +75,24 @@ func (r *deckRepo) toBizList(decks []*ent.Deck) []*biz.Deck {
 	return result
 }
 
+// CreateDeck 创建新卡组
+func (r *deckRepo) CreateDeck(ctx context.Context, userID int, name string) (*biz.Deck, error) {
+	d, err := r.client.Deck.Create().
+		SetUserID(userID).
+		SetName(name).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &biz.Deck{
+		ID:         d.ID,
+		UserID:     d.UserID,
+		Name:       d.Name,
+		TotalCards: 0,
+		DueToday:   0,
+	}, nil
+}
+
 // toBiz 转换为业务模型
 func (r *deckRepo) toBiz(d *ent.Deck) *biz.Deck {
 	// 统计卡片数量和今日待复习数量

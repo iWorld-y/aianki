@@ -99,6 +99,7 @@ func main() {
 
 	// 卡组管理
 	router.GET("/decks", deckSvc.GetDecks)
+	router.POST("/decks", deckSvc.CreateDeck)
 
 	// 复习相关
 	router.GET("/review/today", reviewSvc.GetTodayReviews)
