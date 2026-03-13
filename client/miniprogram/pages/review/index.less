@@ -6,108 +6,335 @@ page {
   background-color: #f6f6f8;
 }
 
-.scrollarea {
+.page-container {
   flex: 1;
-  overflow-y: hidden;
-}
-
-.container {
-  padding: 48rpx;
-  min-height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.empty {
+/* 加载状态 */
+.loading-container {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 160rpx 0;
 }
 
-.empty-text {
-  font-size: 32rpx;
+.loading-spinner {
+  width: 64rpx;
+  height: 64rpx;
+  border: 6rpx solid rgba(80, 72, 229, 0.1);
+  border-top-color: #5048e5;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 24rpx;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  font-size: 28rpx;
   color: #64748b;
-  text-align: center;
 }
 
-.card-wrapper {
+/* 错误状态 */
+.error-container {
   flex: 1;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+}
+
+.error-icon {
+  font-size: 80rpx;
+  margin-bottom: 24rpx;
+}
+
+.error-text {
+  font-size: 28rpx;
+  color: #64748b;
+  text-align: center;
+  margin-bottom: 32rpx;
+}
+
+.retry-btn {
+  padding: 24rpx 64rpx;
+  background-color: #5048e5;
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 600;
+  border-radius: 48rpx;
+  border: none;
+}
+
+.retry-btn::after {
+  border: none;
+}
+
+/* 完成页面 */
+.completion-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+}
+
+.celebration-icon {
+  font-size: 120rpx;
+  margin-bottom: 32rpx;
+}
+
+.completion-title {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 32rpx;
+}
+
+.completion-stats {
+  margin-bottom: 48rpx;
+}
+
+.completion-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.completion-stat .stat-value {
+  font-size: 64rpx;
+  font-weight: 700;
+  color: #5048e5;
+  line-height: 1;
+}
+
+.completion-stat .stat-label {
+  font-size: 24rpx;
+  color: #64748b;
+  margin-top: 8rpx;
+}
+
+.home-btn {
+  padding: 24rpx 64rpx;
+  background-color: #5048e5;
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 600;
+  border-radius: 48rpx;
+  border: none;
+}
+
+.home-btn::after {
+  border: none;
+}
+
+/* 空状态 */
+.empty-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48rpx;
+}
+
+.empty-icon {
+  font-size: 100rpx;
+  margin-bottom: 32rpx;
+}
+
+.empty-title {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 16rpx;
+}
+
+.empty-desc {
+  font-size: 28rpx;
+  color: #64748b;
+  text-align: center;
+  margin-bottom: 48rpx;
+}
+
+/* 复习界面 */
+.review-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 32rpx;
+}
+
+/* 进度条 */
+.progress-section {
+  margin-bottom: 32rpx;
+}
+
+.progress-bar {
+  height: 8rpx;
+  background-color: #e2e8f0;
+  border-radius: 4rpx;
+  overflow: hidden;
+  margin-bottom: 16rpx;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #5048e5;
+  border-radius: 4rpx;
+  transition: width 0.3s ease;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress-text {
+  font-size: 24rpx;
+  color: #64748b;
+}
+
+.remaining-text {
+  font-size: 24rpx;
+  color: #5048e5;
+  font-weight: 500;
+}
+
+/* 卡片区域 */
+.card-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.deck-tag {
+  align-self: center;
+  padding: 8rpx 24rpx;
+  background-color: rgba(80, 72, 229, 0.1);
+  color: #5048e5;
+  font-size: 24rpx;
+  border-radius: 32rpx;
+  margin-bottom: 24rpx;
 }
 
 .card {
   background-color: #ffffff;
   border-radius: 32rpx;
   padding: 80rpx 48rpx;
-  min-height: 400rpx;
+  min-height: 300rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 16rpx 60rpx rgba(0, 0, 0, 0.04);
-  margin-bottom: 48rpx;
+  margin-bottom: 32rpx;
 }
 
-.card-content {
-  font-size: 48rpx;
-  color: #0f172a;
-  text-align: center;
+.front-card {
+  border: 4rpx solid #5048e5;
 }
 
-.show-btn {
-  background-color: #5048e5;
-  color: #ffffff;
-  border-radius: 24rpx;
-  padding: 24rpx;
-  font-size: 32rpx;
-}
-
-.answer-section {
-  display: flex;
-  flex-direction: column;
-  gap: 32rpx;
-}
-
-.answer-card {
-  background-color: rgba(80, 72, 229, 0.1);
-  border-radius: 32rpx;
-  padding: 48rpx;
+.back-card {
+  background-color: rgba(80, 72, 229, 0.05);
   border: 2rpx dashed #5048e5;
 }
 
-.answer-content {
+.card-content {
   font-size: 40rpx;
-  color: #5048e5;
+  color: #0f172a;
   text-align: center;
+  line-height: 1.5;
 }
 
+/* 答案区域 */
+.answer-section {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 评分按钮 */
 .rating-buttons {
   display: flex;
-  gap: 24rpx;
-  justify-content: center;
+  gap: 16rpx;
+  margin-top: 32rpx;
 }
 
 .rating-btn {
   flex: 1;
-  border-radius: 24rpx;
-  padding: 24rpx;
-  font-size: 28rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24rpx 16rpx;
+  border-radius: 16rpx;
   border: none;
 }
 
-.rating-hard {
+.rating-btn::after {
+  border: none;
+}
+
+.rating-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-bottom: 4rpx;
+}
+
+.rating-hint {
+  font-size: 20rpx;
+  opacity: 0.8;
+}
+
+.rating-again {
   background-color: #fee2e2;
   color: #dc2626;
 }
 
-.rating-medium {
+.rating-hard {
   background-color: #fef3c7;
   color: #d97706;
+}
+
+.rating-good {
+  background-color: #dbeafe;
+  color: #2563eb;
 }
 
 .rating-easy {
   background-color: #d1fae5;
   color: #059669;
+}
+
+/* 显示答案按钮 */
+.show-answer-section {
+  margin-top: auto;
+  padding-top: 32rpx;
+}
+
+.show-answer-btn {
+  width: 100%;
+  padding: 32rpx;
+  background-color: #5048e5;
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: 600;
+  border-radius: 24rpx;
+  border: none;
+}
+
+.show-answer-btn::after {
+  border: none;
+}
+
+.show-answer-btn:active {
+  opacity: 0.9;
 }

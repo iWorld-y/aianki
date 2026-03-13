@@ -4,22 +4,55 @@
 <scroll-view class="scrollarea" scroll-y type="list">
   <view class="container">
     <view class="form">
+      <!-- 卡组名称 -->
       <view class="form-item">
-        <text class="label">卡组名称</text>
-        <input class="input" placeholder="请输入卡组名称" value="{{name}}" bindinput="onNameInput" />
+        <text class="label">卡组名称 <text class="required">*</text></text>
+        <input 
+          class="input" 
+          placeholder="请输入卡组名称，如：英语单词" 
+          value="{{name}}" 
+          bindinput="onNameInput" 
+          maxlength="50"
+        />
       </view>
       
+      <!-- 卡组描述 -->
       <view class="form-item">
         <text class="label">卡组描述</text>
-        <textarea class="textarea" placeholder="请输入卡组描述（选填）" value="{{description}}" bindinput="onDescInput" />
+        <textarea 
+          class="textarea" 
+          placeholder="请输入卡组描述（选填），如：四六级核心词汇" 
+          value="{{description}}" 
+          bindinput="onDescInput"
+          maxlength="200"
+        />
       </view>
       
+      <!-- 图标选择 -->
       <view class="form-item">
         <text class="label">图标</text>
-        <input class="input" placeholder="选择图标" value="{{icon}}" bindinput="onIconChange" />
+        <view class="icon-grid">
+          <view 
+            class="icon-item {{icon === item.value ? 'active' : ''}}"
+            wx:for="{{icons}}"
+            wx:key="value"
+            data-value="{{item.value}}"
+            bindtap="onIconSelect"
+          >
+            <text class="icon-emoji">{{item.emoji}}</text>
+            <text class="icon-name">{{item.name}}</text>
+          </view>
+        </view>
       </view>
       
-      <button class="submit-btn" bindtap="onSubmit">创建卡组</button>
+      <!-- 提交按钮 -->
+      <button 
+        class="submit-btn {{submitting ? 'submitting' : ''}}" 
+        bindtap="onSubmit"
+        disabled="{{submitting || !name}}"
+      >
+        {{submitting ? '创建中...' : '创建卡组'}}
+      </button>
     </view>
   </view>
 </scroll-view>

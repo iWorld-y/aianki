@@ -1,7 +1,7 @@
 <!--decks/index.wxml-->
 <navigation-bar title="卡组库" back="{{false}}" color="black" background="#f6f6f8"></navigation-bar>
 
-<scroll-view class="scrollarea" scroll-y type="list">
+<scroll-view class="scrollarea" scroll-y type="list" bindscrolltolower="onLoadMore">
   <view class="container">
     <!-- 游客模式空状态 -->
     <view class="empty guest-empty" wx:if="{{isGuestMode}}">
@@ -14,20 +14,102 @@
         <text class="arrow">→</text>
       </view>
     </view>
-    
+
+    <!-- 加载状态 -->
+    <view class="loading-container" wx:elif="{{loading}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载卡组中...</text>
+    </view>
+
+    <!-- 错误状态 -->
+    <view class="error-container" wx:elif="{{error}}">
+      <text class="error-icon">⚠️</text>
+      <text class="error-text">{{error}}</text>
+      <button class="retry-btn" bindtap="onRetry">重新加载</button>
+    </view>
+
     <!-- 登录后空状态 -->
-    <view class="empty" wx:if="{{!isGuestMode && decks.length === 0}}">
+    <view class="empty" wx:elif="{{!isGuestMode && decks.length === 0}}">
       <view class="empty-icon">📝</view>
       <text class="empty-title">还没有卡组</text>
       <text class="empty-desc">创建你的第一个卡组，开始高效学习</text>
       
       <button class="create-btn" bindtap="onCreateDeck">创建卡组</button>
     </view>
-    
+
     <!-- 卡组列表（登录后显示） -->
-    <view class="deck-list" wx:if="{{!isGuestMode && decks.length > 0}}">
-      <view class="deck-item" wx:for="{{decks}}" wx:key="id">
-        <text>{{item.name}}</text>
+    <view class="deck-content" wx:if="{{!isGuestMode && decks.length > 0}}">
+      <!-- 搜索栏 -->
+      <view class="search-bar">
+        <input 
+          class="search-input" 
+          placeholder="搜索卡组名称" 
+          value="{{searchKeyword}}"
+          bindinput="onSearchInput"
+        />
+        <text class="search-icon">🔍</text>
+      </view>
+
+      <!-- 排序选项 -->
+      <view class="sort-bar">
+        <text class="sort-label">排序:</text>
+        <view class="sort-options">
+          <view 
+            class="sort-option {{sortBy === 'recent' ? 'active' : ''}}" 
+            data-sort="recent"
+            bindtap="onSortChange"
+          >最近复习</view>
+          <view 
+            class="sort-option {{sortBy === 'created' ? 'active' : ''}}" 
+            data-sort="created"
+            bindtap="onSortChange"
+          >创建时间</view>
+          <view 
+            class="sort-option {{sortBy === 'count' ? 'active' : ''}}" 
+            data-sort="count"
+            bindtap="onSortChange"
+          >卡片数量</view>
+          <view 
+            class="sort-option {{sortBy === 'due' ? 'active' : ''}}" 
+            data-sort="due"
+            bindtap="onSortChange"
+          >待复习</view>
+        </view>
+      </view>
+
+      <!-- 搜索结果为空 -->
+      <view class="search-empty" wx:if="{{searchKeyword && filteredDecks.length === 0}}">
+        <text class="search-empty-icon">🔍</text>
+        <text class="search-empty-text">未找到匹配"{{searchKeyword}}"的卡组</text>
+      </view>
+
+      <!-- 卡组列表 -->
+      <view class="deck-list" wx:if="{{filteredDecks.length > 0}}">
+        <view 
+          class="deck-item" 
+          wx:for="{{filteredDecks}}" 
+          wx:key="id"
+          data-id="{{item.id}}"
+          bindtap="onDeckTap"
+        >
+          <view class="deck-main">
+            <text class="deck-name">{{item.name}}</text>
+            <text class="deck-desc" wx:if="{{item.description}}">{{item.description}}</text>
+            <text class="deck-meta">
+              <text class="meta-item">{{item.totalCards}}张卡片</text>
+              <text class="meta-divider">·</text>
+              <text class="meta-item" wx:if="{{item.lastReviewedAt}}">{{item.lastReviewedAt}}</text>
+              <text class="meta-item" wx:else>从未复习</text>
+            </text>
+          </view>
+          <view class="deck-stats">
+            <view class="due-badge" wx:if="{{item.dueToday > 0}}">
+              <text class="due-count">{{item.dueToday}}</text>
+              <text class="due-label">待复习</text>
+            </view>
+            <text class="no-due" wx:else>已完成</text>
+          </view>
+        </view>
       </view>
     </view>
   </view>

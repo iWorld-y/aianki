@@ -1,7 +1,7 @@
 <!--profile/index.wxml-->
 <navigation-bar title="我的" back="{{false}}" color="black" background="#f6f6f8"></navigation-bar>
 
-<scroll-view class="scrollarea" scroll-y type="list">
+<scroll-view class="scrollarea" scroll-y type="list" refresher-enabled="{{isLoggedIn}}" refresher-triggered="{{loading}}" bindrefresherrefresh="onPullDownRefresh">
   <view class="container">
     
     <!-- 用户信息卡片 -->
@@ -12,7 +12,7 @@
         
         <view class="user-meta">
           <text class="nickname">{{userInfo.nickName}}</text>
-          <text class="user-desc">继续加油学习吧！</text>
+          <text class="user-desc">{{getEncouragementText()}}</text>
         </view>
         
         <view class="edit-btn" bindtap="onEditProfile">
@@ -39,24 +39,29 @@
     <!-- 统计卡片 -->
     <view class="stats-card">
       <view class="stat-item">
-        <text class="stat-value {{isGuestMode ? 'placeholder' : ''}}">{{stats.totalCards}}</text>
+        <text class="stat-value {{isGuestMode ? 'placeholder' : ''}}">{{isGuestMode ? '--' : stats.totalCards}}</text>
         <text class="stat-label">总卡片</text>
       </view>
       
       <view class="stat-divider"></view>
       
-      
       <view class="stat-item">
-        <text class="stat-value {{isGuestMode ? 'placeholder' : ''}}">{{stats.reviewedCards}}</text>
-        <text class="stat-label">已复习</text>
+        <text class="stat-value {{isGuestMode ? 'placeholder' : ''}}">{{isGuestMode ? '--' : stats.todayReviewed}}</text>
+        <text class="stat-label">今日已复习</text>
       </view>
       
       <view class="stat-divider"></view>
       
+      <view class="stat-item">
+        <text class="stat-value {{isGuestMode ? 'placeholder' : ''}}">{{isGuestMode ? '--' : stats.streakDays}}</text>
+        <text class="stat-label">连续天数</text>
+      </view>
+      
+      <view class="stat-divider"></view>
       
       <view class="stat-item">
-        <text class="stat-value {{isGuestMode ? 'placeholder' : ''}}">{{stats.streakDays}}</text>
-        <text class="stat-label">连续天数</text>
+        <text class="stat-value {{isGuestMode ? 'placeholder' : ''}}">{{isGuestMode ? '--' : stats.masteredCards}}</text>
+        <text class="stat-label">已掌握</text>
       </view>
     </view>
 

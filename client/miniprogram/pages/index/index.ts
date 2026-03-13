@@ -2,49 +2,47 @@
 // 首页 - 展示复习统计和卡组列表，支持游客/登录模式
 
 import { requireLogin } from '../../utils/auth'
+import {
+  getTodayReviews,
+  getRecentDecks,
+  getStats,
+} from '../../utils/request'
+import { DECK_ICON_MAP } from '../../utils/constants'
+import type { DeckCard } from '../../typings/types/api'
 
 const app = getApp<IAppOption>()
-const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
-
-interface Deck {
-  id: string
-  name: string
-  icon: string
-  cardCount: number
-  dueCount: number
-  bgColor: string
-  iconColor: string
-}
+const defaultAvatarUrl =
+  'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
 
 // 示例卡组数据（游客模式显示）
-const sampleDecks: Deck[] = [
+const sampleDecks: DeckCard[] = [
   {
-    id: 'sample-1',
+    id: 1,
     name: '英语单词',
     icon: 'translate',
     cardCount: 20,
     dueCount: 5,
-    bgColor: 'rgba(80, 72, 229, 0.1)',
-    iconColor: '#5048e5'
+    bgColor: DECK_ICON_MAP.translate.bgColor,
+    iconColor: DECK_ICON_MAP.translate.iconColor,
   },
   {
-    id: 'sample-2',
+    id: 2,
     name: '世界历史',
     icon: 'history',
     cardCount: 15,
     dueCount: 2,
-    bgColor: 'rgba(249, 115, 22, 0.1)',
-    iconColor: '#f97316'
+    bgColor: DECK_ICON_MAP.history.bgColor,
+    iconColor: DECK_ICON_MAP.history.iconColor,
   },
   {
-    id: 'sample-3',
+    id: 3,
     name: '数学公式',
     icon: 'functions',
     cardCount: 30,
     dueCount: 5,
-    bgColor: 'rgba(16, 185, 129, 0.1)',
-    iconColor: '#10b981'
-  }
+    bgColor: DECK_ICON_MAP.functions.bgColor,
+    iconColor: DECK_ICON_MAP.functions.iconColor,
+  },
 ]
 
 Component({
@@ -55,24 +53,34 @@ Component({
       nickName: '访客',
     },
     greeting: '欢迎来到AI记忆卡',
-    todayDueCount: '--',
+    todayDueCount: 0,
     deckCount: 0,
-    decks: [] as Deck[],
-    isGuestMode: true
+    decks: [] as DeckCard[],
+    isGuestMode: true,
+    loading: {
+      todayDue: false,
+      decks: false,
+      stats: false,
+    },
+    error: {
+      todayDue: '',
+      decks: '',
+      stats: '',
+    },
   },
 
   lifetimes: {
     attached() {
       this.updateGreeting()
       this.checkLoginState()
-    }
+    },
   },
 
   pageLifetimes: {
     show() {
-      // 页面显示时刷新登录状态
+      // 页面显示时刷新登录状态和数据
       this.checkLoginState()
-    }
+    },
   },
 
   methods: {
@@ -87,13 +95,10 @@ Component({
       } else if (hour >= 18) {
         baseGreeting = '晚上好'
       }
-      
-      // 根据登录状态设置问候语
-      if (this.data.isLoggedIn && this.data.userInfo.nickName !== '访客') {
-        this.setData({ greeting: `${baseGreeting}，${this.data.userInfo.nickName}` })
-      } else {
-        this.setData({ greeting: '欢迎来到AI记忆卡' })
-      }
+
+      this.setData({
+        greeting: baseGreeting,
+      })
     },
 
     /**
@@ -105,21 +110,20 @@ Component({
 
       this.setData({
         isLoggedIn,
-        isGuestMode: !isLoggedIn
+        isGuestMode: !isLoggedIn,
       })
 
       if (isLoggedIn && userInfo) {
         // 登录模式：加载真实数据
         this.setData({
           userInfo: userInfo,
-          greeting: this.data.greeting.replace('访客', userInfo.nickName)
         })
         this.loadRealData()
       } else {
         // 游客模式：显示示例数据
         this.loadGuestData()
       }
-      
+
       this.updateGreeting()
     },
 
@@ -130,31 +134,205 @@ Component({
       this.setData({
         userInfo: {
           avatarUrl: defaultAvatarUrl,
-          nickName: '访客'
+          nickName: '访客',
         },
-        todayDueCount: '--',
+        todayDueCount: 0,
         deckCount: 3,
-        decks: sampleDecks
+        decks: sampleDecks,
+        loading: {
+          todayDue: false,
+          decks: false,
+          stats: false,
+        },
+        error: {
+          todayDue: '',
+          decks: '',
+          stats: '',
+        },
       })
     },
 
     /**
      * 加载真实数据（登录后）
+     * 使用 Promise.allSettled 并发请求多个接口，即使部分失败也能显示已有数据
      */
-    loadRealData() {
-      // TODO: 从 API 加载真实数据
-      // 暂时使用示例数据
+    async loadRealData() {
       this.setData({
-        todayDueCount: 12,
-        deckCount: 3,
-        decks: sampleDecks
+        'loading.todayDue': true,
+        'loading.decks': true,
+        'loading.stats': true,
       })
+
+      // 使用 allSettled 确保即使部分请求失败，其他请求的结果仍可使用
+      const results = await Promise.allSettled([
+        this.fetchTodayReviews(),
+        this.fetchRecentDecks(),
+        this.fetchStats(),
+      ])
+
+      const [todayResult, decksResult, statsResult] = results
+      const errors: string[] = []
+
+      // 处理今日待复习数据
+      let todayDueCount = 0
+      if (todayResult.status === 'fulfilled') {
+        todayDueCount = todayResult.value.count
+      } else {
+        errors.push('今日复习数据加载失败')
+        console.error('今日复习数据加载失败:', todayResult.reason)
+      }
+
+      // 处理卡组数据
+      let formattedDecks: DeckCard[] = []
+      if (decksResult.status === 'fulfilled') {
+        formattedDecks = decksResult.value.decks.map((deck) =>
+          this.formatDeckCard(deck)
+        )
+      } else {
+        errors.push('卡组数据加载失败')
+        console.error('卡组数据加载失败:', decksResult.reason)
+      }
+
+      // 处理统计数据
+      let deckCount = 0
+      if (statsResult.status === 'fulfilled') {
+        deckCount = statsResult.value.totalCards > 0 ? Math.ceil(statsResult.value.totalCards / 10) : 0
+      } else {
+        errors.push('统计数据加载失败')
+        console.error('统计数据加载失败:', statsResult.reason)
+      }
+
+      // 更新界面数据
+      this.setData({
+        todayDueCount,
+        deckCount,
+        decks: formattedDecks,
+        loading: {
+          todayDue: false,
+          decks: false,
+          stats: false,
+        },
+      })
+
+      // 如果有错误，显示提示但不中断用户体验
+      if (errors.length > 0) {
+        console.warn('部分数据加载失败:', errors)
+        // 只有当所有请求都失败时才显示错误提示
+        if (errors.length === 3) {
+          this.handleLoadError()
+        }
+      } else {
+        // 全部成功才更新同步时间
+        app.updateSyncTime()
+      }
+    },
+
+    /**
+     * 获取今日待复习数据
+     */
+    async fetchTodayReviews() {
+      try {
+        const data = await getTodayReviews()
+        this.setData({ 'loading.todayDue': false })
+        return data
+      } catch (error) {
+        this.setData({
+          'loading.todayDue': false,
+          'error.todayDue': '数据加载失败',
+        })
+        throw error
+      }
+    },
+
+    /**
+     * 获取最近卡组数据
+     */
+    async fetchRecentDecks() {
+      try {
+        const data = await getRecentDecks(5)
+        this.setData({ 'loading.decks': false })
+        return data
+      } catch (error) {
+        this.setData({
+          'loading.decks': false,
+          'error.decks': '卡组加载失败',
+        })
+        throw error
+      }
+    },
+
+    /**
+     * 获取统计数据
+     */
+    async fetchStats() {
+      try {
+        const data = await getStats()
+        this.setData({ 'loading.stats': false })
+        return data
+      } catch (error) {
+        this.setData({
+          'loading.stats': false,
+          'error.stats': '统计加载失败',
+        })
+        throw error
+      }
+    },
+
+    /**
+     * 格式化卡组卡片数据，添加图标配置
+     * @param deck 原始卡组数据
+     * @returns 格式化后的卡组数据
+     */
+    formatDeckCard(deck: {
+      id: number
+      name: string
+      icon?: string
+      cardCount?: number
+      dueCount?: number
+    }): DeckCard {
+      const iconType = (deck.icon as keyof typeof DECK_ICON_MAP) || 'default'
+      const iconConfig = DECK_ICON_MAP[iconType] || DECK_ICON_MAP.default
+
+      return {
+        id: deck.id,
+        name: deck.name,
+        icon: iconType,
+        cardCount: deck.cardCount || 0,
+        dueCount: deck.dueCount || 0,
+        bgColor: iconConfig.bgColor,
+        iconColor: iconConfig.iconColor,
+      }
+    },
+
+    /**
+     * 处理加载错误
+     */
+    handleLoadError() {
+      wx.showToast({
+        title: '数据加载失败，请下拉刷新',
+        icon: 'none',
+        duration: 2000,
+      })
+    },
+
+    /**
+     * 下拉刷新
+     */
+    async onPullDownRefresh() {
+      if (this.data.isLoggedIn) {
+        try {
+          await this.loadRealData()
+        } catch (error) {
+          console.error('刷新失败:', error)
+        }
+      }
+      wx.stopPullDownRefresh()
     },
 
     /**
      * 登录成功后刷新页面
      */
-    onLoginSuccess(e: any) {
+    onLoginSuccess(e: unknown) {
       this.checkLoginState()
     },
 
@@ -164,7 +342,7 @@ Component({
     onStartReview() {
       requireLogin(() => {
         wx.navigateTo({
-          url: '/pages/review/index'
+          url: '/pages/review/index',
         })
       })
     },
@@ -174,7 +352,7 @@ Component({
      */
     onNavigateToDecks() {
       wx.switchTab({
-        url: '/pages/decks/index'
+        url: '/pages/decks/index',
       })
     },
 
@@ -184,7 +362,7 @@ Component({
     onCreateDeck() {
       requireLogin(() => {
         wx.navigateTo({
-          url: '/pages/create/index'
+          url: '/pages/create/index',
         })
       })
     },
@@ -201,7 +379,7 @@ Component({
           success(res) {
             console.log('Camera success:', res)
             // TODO: 处理拍照后的图片识别
-          }
+          },
         })
       })
     },
@@ -212,28 +390,28 @@ Component({
     onNotification() {
       wx.showToast({
         title: '暂无新通知',
-        icon: 'none'
+        icon: 'none',
       })
     },
 
     /**
      * 点击卡组卡片
      */
-    onDeckTap(e: any) {
+    onDeckTap(e: WechatMiniprogram.TouchEvent) {
       const { id } = e.currentTarget.dataset
-      
+
       // 游客点击示例卡组需要登录
       if (this.data.isGuestMode) {
         requireLogin(() => {
           wx.navigateTo({
-            url: `/pages/decks/index?id=${id}`
+            url: `/pages/decks/index?id=${id}`,
           })
         })
       } else {
         wx.navigateTo({
-          url: `/pages/decks/index?id=${id}`
+          url: `/pages/decks/index?id=${id}`,
         })
       }
-    }
-  }
+    },
+  },
 })
