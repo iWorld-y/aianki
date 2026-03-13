@@ -19,6 +19,12 @@ interface IAppOption {
   checkLogin(): void
 
   /**
+   * 刷新用户信息（从服务器获取最新信息）
+   * @param serverUserInfo 服务器返回的用户信息
+   */
+  refreshUserInfo(serverUserInfo: { nickname?: string; avatar_url?: string }): void
+
+  /**
    * 设置登录状态
    * @param userInfo 用户信息
    * @param token JWT token

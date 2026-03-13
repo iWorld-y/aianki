@@ -3,6 +3,9 @@
 
 import { clearAllCache, removeCache, markCachesStale } from './utils/cache'
 
+const defaultAvatarUrl =
+  'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
+
 const app = App<IAppOption>({
   globalData: {
     userInfo: undefined,
@@ -17,7 +20,7 @@ const app = App<IAppOption>({
   },
 
   /**
-   * 检查本地登录状态
+   * 检查本地登录状态（同步初始化，不依赖其他模块）
    */
   checkLogin() {
     const token = wx.getStorageSync('token')
@@ -30,6 +33,26 @@ const app = App<IAppOption>({
       this.globalData.isLoggedIn = true
       this.globalData.lastSyncTime = lastSyncTime
     }
+  },
+
+  /**
+   * 刷新用户信息（从服务器获取最新信息）
+   * @param serverUserInfo 服务器返回的用户信息
+   */
+  refreshUserInfo(serverUserInfo: { nickname?: string; avatar_url?: string }) {
+    if (!serverUserInfo) return
+
+    const userInfo: WechatMiniprogram.UserInfo = {
+      nickName: serverUserInfo.nickname || '微信用户',
+      avatarUrl: serverUserInfo.avatar_url || defaultAvatarUrl,
+      gender: 0,
+      country: '',
+      province: '',
+      city: '',
+      language: 'zh_CN'
+    }
+    this.globalData.userInfo = userInfo
+    wx.setStorageSync('userInfo', userInfo)
   },
 
   /**

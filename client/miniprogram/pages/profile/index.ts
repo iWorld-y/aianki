@@ -2,7 +2,7 @@
 // 个人中心页面 - 展示用户信息和统计数据
 
 import { requireLogin, logout } from '../../utils/auth'
-import { getStats } from '../../utils/request'
+import { getStats, getUserInfo } from '../../utils/request'
 import type { UserStats } from '../../typings/types/api'
 
 const app = getApp<IAppOption>()
@@ -44,19 +44,32 @@ Component({
     /**
      * 检查登录状态并加载数据
      */
-    checkLoginState() {
+    async checkLoginState() {
       const isLoggedIn = app.globalData.isLoggedIn
-      const userInfo = app.globalData.userInfo
 
       this.setData({
         isLoggedIn,
         isGuestMode: !isLoggedIn,
       })
 
-      if (isLoggedIn && userInfo) {
-        this.setData({
-          userInfo: userInfo,
-        })
+      if (isLoggedIn) {
+        // 刷新服务器用户信息
+        try {
+          const serverUserInfo = await getUserInfo()
+          if (serverUserInfo && serverUserInfo.nickname) {
+            // 更新全局状态
+            app.refreshUserInfo(serverUserInfo)
+          }
+        } catch (error) {
+          console.log('获取服务器用户信息失败，使用本地数据')
+        }
+
+        const userInfo = app.globalData.userInfo
+        if (userInfo) {
+          this.setData({
+            userInfo: userInfo,
+          })
+        }
         this.loadStats()
       } else {
         // 游客模式重置数据

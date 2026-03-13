@@ -12,9 +12,8 @@ import type {
   CreateDeckResponse,
   ReviewSubmitRequest,
   ReviewSubmitResponse,
+  UserInfoResponse,
 } from '../typings/types/api'
-
-const app = getApp<IAppOption>()
 
 interface RequestOptions {
   url: string
@@ -25,6 +24,10 @@ interface RequestOptions {
   useCache?: boolean // 是否使用缓存
 }
 
+function getAppInstance(): IAppOption {
+  return getApp<IAppOption>()
+}
+
 /**
  * 通用请求函数
  * @param options 请求选项
@@ -32,6 +35,9 @@ interface RequestOptions {
  */
 export function request<T>(options: RequestOptions): Promise<T> {
   return new Promise((resolve, reject) => {
+    // 在函数内部获取 app 实例
+    const app = getAppInstance()
+    
     // 检查是否需要使用缓存
     if (options.useCache && options.cacheKey && options.method === 'GET') {
       const cached = getCache<T>(options.cacheKey)
@@ -189,4 +195,16 @@ export function submitReview(data: ReviewSubmitRequest): Promise<ReviewSubmitRes
 export function refreshCache(cacheKey: string): void {
   console.log(`[Cache] 刷新缓存: ${cacheKey}`)
   // 下次请求时会自动重新获取
+}
+
+/**
+ * 获取用户信息
+ * @returns Promise<UserInfoResponse>
+ */
+export function getUserInfo(): Promise<UserInfoResponse> {
+  return request<UserInfoResponse>({
+    url: '/user/info',
+    cacheKey: 'userInfo',
+    useCache: false, // 用户信息不使用缓存，每次都从服务器获取最新
+  })
 }

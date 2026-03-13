@@ -1,13 +1,16 @@
 // utils/auth.ts
 // 登录守卫工具函数 - 处理登录状态检查和弹窗触发
 
-const app = getApp<IAppOption>()
+function getAppInstance(): IAppOption {
+  return getApp<IAppOption>()
+}
 
 /**
  * 检查是否已登录
  * @returns boolean 是否已登录
  */
 export function isLoggedIn(): boolean {
+  const app = getAppInstance()
   return app.globalData.isLoggedIn
 }
 
@@ -17,6 +20,7 @@ export function isLoggedIn(): boolean {
  * @returns boolean 是否已登录（true 表示已登录或正在登录）
  */
 export function requireLogin(callback?: () => void): boolean {
+  const app = getAppInstance()
   if (app.globalData.isLoggedIn) {
     if (callback) {
       callback()
@@ -52,6 +56,7 @@ export function requireLogin(callback?: () => void): boolean {
  */
 export function requireLoginAsync(): Promise<boolean> {
   return new Promise((resolve) => {
+    const app = getAppInstance()
     if (app.globalData.isLoggedIn) {
       resolve(true)
       return
@@ -89,6 +94,7 @@ export function logout(): void {
     success: (res) => {
       if (res.confirm) {
         // 调用 app 的 logout 方法统一处理
+        const app = getAppInstance()
         app.logout()
 
         wx.showToast({

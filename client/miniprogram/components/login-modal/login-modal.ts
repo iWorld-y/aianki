@@ -1,7 +1,12 @@
 // components/login-modal/login-modal.ts
 // 登录弹窗组件 - 处理微信一键登录流程
 
-const app = getApp<IAppOption>()
+const defaultAvatarUrl =
+  'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
+
+function getAppInstance(): IAppOption {
+  return getApp<IAppOption>()
+}
 
 Component({
   data: {
@@ -85,6 +90,7 @@ Component({
           }
 
           // 2. 调用后端登录接口
+          const app = getAppInstance()
           wx.request({
             url: `${app.globalData.apiBaseURL}/auth/login`,
             method: 'POST',
@@ -104,8 +110,17 @@ Component({
 
               const { token } = data.data
 
-              // 3. 保存登录状态
-              app.setLoginState(userInfo, token)
+              // 3. 保存登录状态（使用后端返回的用户信息）
+              const serverUserInfo = data.data.userInfo
+              const displayUserInfo = serverUserInfo && serverUserInfo.nickname 
+                ? {
+                    nickName: serverUserInfo.nickname || '微信用户',
+                    avatarUrl: serverUserInfo.avatar_url || defaultAvatarUrl
+                  } as WechatMiniprogram.UserInfo
+                : userInfo
+              
+              const appInstance = getAppInstance()
+              appInstance.setLoginState(displayUserInfo, token)
 
               // 4. 关闭弹窗
               this.hide()
