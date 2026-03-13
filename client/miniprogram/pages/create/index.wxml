@@ -39,8 +39,8 @@
             data-value="{{item.value}}"
             bindtap="onIconSelect"
           >
-            <text class="icon-emoji">{{item.label.split(' ')[0]}}</text>
-            <text class="icon-name">{{item.label.split(' ')[1]}}</text>
+            <text class="icon-emoji">{{item.emoji}}</text>
+            <text class="icon-name">{{item.name}}</text>
           </view>
         </view>
       </view>
@@ -49,7 +49,7 @@
       <button 
         class="submit-btn {{submitting ? 'submitting' : ''}}" 
         bindtap="onSubmit"
-        disabled="{{submitting || !name.trim()}}"
+        disabled="{{submitting || !name}}"
       >
         {{submitting ? '创建中...' : '创建卡组'}}
       </button>

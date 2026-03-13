@@ -154,7 +154,7 @@ Component({
 
     /**
      * 加载真实数据（登录后）
-     * 使用 Promise.all 并发请求多个接口
+     * 使用 Promise.allSettled 并发请求多个接口，即使部分失败也能显示已有数据
      */
     async loadRealData() {
       this.setData({
@@ -163,35 +163,67 @@ Component({
         'loading.stats': true,
       })
 
-      try {
-        // 并发请求：今日待复习、最近卡组、统计数据
-        const [todayReviews, recentDecks, stats] = await Promise.all([
-          this.fetchTodayReviews(),
-          this.fetchRecentDecks(),
-          this.fetchStats(),
-        ])
+      // 使用 allSettled 确保即使部分请求失败，其他请求的结果仍可使用
+      const results = await Promise.allSettled([
+        this.fetchTodayReviews(),
+        this.fetchRecentDecks(),
+        this.fetchStats(),
+      ])
 
-        // 处理卡组数据，添加图标配置
-        const formattedDecks = recentDecks.decks.map((deck) =>
+      const [todayResult, decksResult, statsResult] = results
+      const errors: string[] = []
+
+      // 处理今日待复习数据
+      let todayDueCount = 0
+      if (todayResult.status === 'fulfilled') {
+        todayDueCount = todayResult.value.count
+      } else {
+        errors.push('今日复习数据加载失败')
+        console.error('今日复习数据加载失败:', todayResult.reason)
+      }
+
+      // 处理卡组数据
+      let formattedDecks: DeckCard[] = []
+      if (decksResult.status === 'fulfilled') {
+        formattedDecks = decksResult.value.decks.map((deck) =>
           this.formatDeckCard(deck)
         )
+      } else {
+        errors.push('卡组数据加载失败')
+        console.error('卡组数据加载失败:', decksResult.reason)
+      }
 
-        this.setData({
-          todayDueCount: todayReviews.count,
-          deckCount: stats.totalCards > 0 ? Math.ceil(stats.totalCards / 10) : 0, // 估算卡组数
-          decks: formattedDecks,
-          loading: {
-            todayDue: false,
-            decks: false,
-            stats: false,
-          },
-        })
+      // 处理统计数据
+      let deckCount = 0
+      if (statsResult.status === 'fulfilled') {
+        deckCount = statsResult.value.totalCards > 0 ? Math.ceil(statsResult.value.totalCards / 10) : 0
+      } else {
+        errors.push('统计数据加载失败')
+        console.error('统计数据加载失败:', statsResult.reason)
+      }
 
-        // 更新同步时间
+      // 更新界面数据
+      this.setData({
+        todayDueCount,
+        deckCount,
+        decks: formattedDecks,
+        loading: {
+          todayDue: false,
+          decks: false,
+          stats: false,
+        },
+      })
+
+      // 如果有错误，显示提示但不中断用户体验
+      if (errors.length > 0) {
+        console.warn('部分数据加载失败:', errors)
+        // 只有当所有请求都失败时才显示错误提示
+        if (errors.length === 3) {
+          this.handleLoadError()
+        }
+      } else {
+        // 全部成功才更新同步时间
         app.updateSyncTime()
-      } catch (error) {
-        console.error('加载首页数据失败:', error)
-        this.handleLoadError()
       }
     },
 

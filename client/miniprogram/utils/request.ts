@@ -56,6 +56,7 @@ export function request<T>(options: RequestOptions): Promise<T> {
       data: options.data,
       header,
       success: (res) => {
+        // 处理 HTTP 错误状态码
         if (res.statusCode === 401) {
           wx.removeStorageSync('token')
           wx.removeStorageSync('userInfo')
@@ -66,6 +67,17 @@ export function request<T>(options: RequestOptions): Promise<T> {
           return
         }
 
+        if (res.statusCode === 404) {
+          reject(new Error(`接口未找到: ${options.url}`))
+          return
+        }
+
+        if (res.statusCode >= 500) {
+          reject(new Error('服务器内部错误，请稍后重试'))
+          return
+        }
+
+        // 处理业务逻辑错误
         const data = res.data as { code: number; message?: string; data: T }
         if (data.code === 0) {
           // 缓存响应数据
@@ -74,7 +86,7 @@ export function request<T>(options: RequestOptions): Promise<T> {
           }
           resolve(data.data)
         } else {
-          reject(new Error(data.message || '请求失败'))
+          reject(new Error(data.message || `请求失败 (code: ${data.code})`))
         }
       },
       fail: (err) => {

@@ -5,6 +5,13 @@ import { createDeck } from '../../utils/request'
 import { removeCache } from '../../utils/cache'
 import type { DeckIconType } from '../../typings/types/api'
 
+interface IconItem {
+  value: string
+  label: string
+  emoji: string
+  name: string
+}
+
 Component({
   data: {
     name: '',
@@ -12,13 +19,13 @@ Component({
     icon: 'default' as DeckIconType,
     submitting: false,
     icons: [
-      { value: 'translate', label: '🌐 翻译' },
-      { value: 'history', label: '📜 历史' },
-      { value: 'functions', label: '∑ 数学' },
-      { value: 'science', label: '🔬 科学' },
-      { value: 'art', label: '🎨 艺术' },
-      { value: 'default', label: '📚 默认' },
-    ],
+      { value: 'translate', label: '🌐 翻译', emoji: '🌐', name: '翻译' },
+      { value: 'history', label: '📜 历史', emoji: '📜', name: '历史' },
+      { value: 'functions', label: '∑ 数学', emoji: '∑', name: '数学' },
+      { value: 'science', label: '🔬 科学', emoji: '🔬', name: '科学' },
+      { value: 'art', label: '🎨 艺术', emoji: '🎨', name: '艺术' },
+      { value: 'default', label: '📚 默认', emoji: '📚', name: '默认' },
+    ] as IconItem[],
   },
 
   methods: {

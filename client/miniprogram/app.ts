@@ -8,7 +8,7 @@ const app = App<IAppOption>({
     userInfo: undefined,
     isLoggedIn: false,
     token: '',
-    apiBaseURL: 'http://localhost:8000/api/v1',
+    apiBaseURL: 'http://localhost:8001/api/v1',
     lastSyncTime: 0,
   },
 

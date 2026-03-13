@@ -72,21 +72,36 @@ func main() {
 
 	// 初始化数据层
 	userRepo := data.NewUserRepo(entClient)
+	deckRepo := data.NewDeckRepo(entClient)
+	reviewRepo := data.NewReviewRepo(entClient)
 
 	// 初始化业务层
 	userUc := biz.NewUserUsecase(userRepo, cfg.Auth.JWTSecret)
+	deckUc := biz.NewDeckUsecase(deckRepo)
+	reviewUc := biz.NewReviewUsecase(reviewRepo, 20) // 每日最多复习 20 张卡片
 
 	// 初始化服务层
 	userSvc := service.NewUserService(userUc, wechatCli)
+	deckSvc := service.NewDeckService(deckUc, cfg.Auth.JWTSecret)
+	reviewSvc := service.NewReviewService(reviewUc, cfg.Auth.JWTSecret)
 
 	// 创建 HTTP 服务器
 	httpSrv := http.NewServer(
-		http.Address(":8000"),
+		http.Address(":8001"),
 	)
 
 	// 注册路由
 	router := httpSrv.Route("/api/v1")
+
+	// 用户认证
 	router.POST("/auth/login", userSvc.Login)
+
+	// 卡组管理
+	router.GET("/decks", deckSvc.GetDecks)
+
+	// 复习相关
+	router.GET("/review/today", reviewSvc.GetTodayReviews)
+	router.GET("/stats", reviewSvc.GetStats)
 
 	app := kratos.New(
 		kratos.Server(httpSrv),
