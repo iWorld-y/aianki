@@ -1,14 +1,16 @@
 // index.ts
 // 首页 - 展示复习统计和卡组列表，支持游客/登录模式
 
-import { requireLogin } from '../../utils/auth'
+import { requireLogin, requireLoginAsync } from '../../utils/auth'
 import {
   getTodayReviews,
   getRecentDecks,
   getStats,
 } from '../../utils/request'
 import { DECK_ICON_MAP } from '../../utils/constants'
+import { chooseAndUploadImage } from '../../utils/upload'
 import type { DeckCard } from '../../typings/types/api'
+import type { UploadImageResponse } from '../../typings/types/api'
 
 const app = getApp<IAppOption>()
 const defaultAvatarUrl =
@@ -370,18 +372,33 @@ Component({
     /**
      * 打开相机
      */
-    onOpenCamera() {
-      requireLogin(() => {
-        wx.chooseMedia({
-          count: 1,
-          mediaType: ['image'],
-          sourceType: ['camera'],
-          success(res) {
-            console.log('Camera success:', res)
-            // TODO: 处理拍照后的图片识别
-          },
+    async onOpenCamera() {
+      const isLoggedIn = await requireLoginAsync()
+      if (!isLoggedIn) return
+      
+      try {
+        wx.showLoading({ title: '上传中...' })
+        const result: UploadImageResponse = await chooseAndUploadImage('card_source')
+        const fullUrl = `${app.globalData.apiBaseURL}${result.url}`
+        
+        wx.hideLoading()
+        wx.showToast({
+          title: '上传成功',
+          icon: 'success',
+          duration: 2000,
         })
-      })
+        
+        console.log('Photo uploaded:', fullUrl)
+        // TODO: 后续可以添加图片识别和创建卡片的逻辑
+      } catch (error) {
+        wx.hideLoading()
+        console.error('上传照片失败:', error)
+        wx.showToast({
+          title: error instanceof Error ? error.message : '上传失败',
+          icon: 'none',
+          duration: 2000,
+        })
+      }
     },
 
     /**

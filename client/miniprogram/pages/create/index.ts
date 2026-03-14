@@ -3,7 +3,9 @@
 
 import { createDeck } from '../../utils/request'
 import { removeCache } from '../../utils/cache'
+import { chooseAndUploadImage } from '../../utils/upload'
 import type { DeckIconType } from '../../typings/types/api'
+import type { UploadImageResponse } from '../../typings/types/api'
 
 interface IconItem {
   value: string
@@ -17,6 +19,9 @@ Component({
     name: '',
     description: '',
     icon: 'default' as DeckIconType,
+    coverImage: '',
+    coverImageUrl: '',
+    uploading: false,
     submitting: false,
     icons: [
       { value: 'translate', label: '🌐 翻译', emoji: '🌐', name: '翻译' },
@@ -49,6 +54,51 @@ Component({
     onIconSelect(e: WechatMiniprogram.TouchEvent) {
       const { value } = e.currentTarget.dataset
       this.setData({ icon: value })
+    },
+
+    /**
+     * 选择并上传封面图片
+     */
+    async onChooseCoverImage() {
+      if (this.data.uploading) return
+
+      this.setData({ uploading: true })
+
+      try {
+        const result: UploadImageResponse = await chooseAndUploadImage('card_source')
+        const app = getApp<IAppOption>()
+        const fullUrl = `${app.globalData.apiBaseURL}${result.url}`
+        
+        this.setData({
+          coverImage: fullUrl,
+          coverImageUrl: result.url,
+        })
+        
+        wx.showToast({
+          title: '上传成功',
+          icon: 'success',
+          duration: 1500,
+        })
+      } catch (error) {
+        console.error('上传封面图片失败:', error)
+        wx.showToast({
+          title: error instanceof Error ? error.message : '上传失败',
+          icon: 'none',
+          duration: 2000,
+        })
+      } finally {
+        this.setData({ uploading: false })
+      }
+    },
+
+    /**
+     * 删除封面图片
+     */
+    onRemoveCoverImage() {
+      this.setData({
+        coverImage: '',
+        coverImageUrl: '',
+      })
     },
 
     /**

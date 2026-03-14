@@ -4,6 +4,24 @@
 <scroll-view class="scrollarea" scroll-y type="list">
   <view class="container">
     <view class="form">
+      <!-- 封面图片 -->
+      <view class="form-item">
+        <text class="label">封面图片</text>
+        <view class="cover-upload">
+          <view wx:if="{{!coverImage}}" class="upload-placeholder" bindtap="onChooseCoverImage">
+            <text class="upload-icon">📷</text>
+            <text class="upload-text">{{uploading ? '上传中...' : '点击拍照或选择图片'}}</text>
+          </view>
+          <view wx:else class="cover-preview">
+            <image class="cover-image" src="{{coverImage}}" mode="aspectFill"></image>
+            <view class="cover-actions">
+              <button class="action-btn change-btn" bindtap="onChooseCoverImage">更换图片</button>
+              <button class="action-btn delete-btn" bindtap="onRemoveCoverImage">删除</button>
+            </view>
+          </view>
+        </view>
+      </view>
+
       <!-- 卡组名称 -->
       <view class="form-item">
         <text class="label">卡组名称 <text class="required">*</text></text>

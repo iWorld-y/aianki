@@ -6,12 +6,15 @@ import { clearAllCache, removeCache, markCachesStale } from './utils/cache'
 const defaultAvatarUrl =
   'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
 
-const app = App<IAppOption>({
+App<IAppOption>({
   globalData: {
     userInfo: undefined,
     isLoggedIn: false,
     token: '',
-    apiBaseURL: 'http://localhost:8001/api/v1',
+    // 真机调试时请替换为你的电脑局域网 IP 地址
+    // 查看 IP: macOS 运行 `ifconfig | grep "inet "`，Windows 运行 `ipconfig`
+    // 确保手机和电脑在同一 WiFi 网络
+    apiBaseURL: 'http://192.168.1.8:8001/api/v1',
     lastSyncTime: 0,
   },
 

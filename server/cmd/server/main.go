@@ -74,16 +74,19 @@ func main() {
 	userRepo := data.NewUserRepo(entClient)
 	deckRepo := data.NewDeckRepo(entClient)
 	reviewRepo := data.NewReviewRepo(entClient)
+	uploadRepo := data.NewUploadRepo()
 
 	// 初始化业务层
 	userUc := biz.NewUserUsecase(userRepo, cfg.Auth.JWTSecret)
 	deckUc := biz.NewDeckUsecase(deckRepo)
 	reviewUc := biz.NewReviewUsecase(reviewRepo, 20) // 每日最多复习 20 张卡片
+	uploadUc := biz.NewUploadUsecase(uploadRepo)
 
 	// 初始化服务层
 	userSvc := service.NewUserService(userUc, wechatCli, cfg.Auth.JWTSecret)
 	deckSvc := service.NewDeckService(deckUc, cfg.Auth.JWTSecret)
 	reviewSvc := service.NewReviewService(reviewUc, cfg.Auth.JWTSecret)
+	uploadSvc := service.NewUploadService(uploadUc)
 
 	// 创建 HTTP 服务器
 	httpSrv := http.NewServer(
@@ -104,6 +107,13 @@ func main() {
 	// 复习相关
 	router.GET("/review/today", reviewSvc.GetTodayReviews)
 	router.GET("/stats", reviewSvc.GetStats)
+
+	// 文件上传
+	router.POST("/upload/image", uploadSvc.UploadImage)
+
+	// 静态文件服务
+	uploadsRouter := httpSrv.Route("/uploads")
+	uploadsRouter.GET("/*", service.ServeStaticFile)
 
 	app := kratos.New(
 		kratos.Server(httpSrv),

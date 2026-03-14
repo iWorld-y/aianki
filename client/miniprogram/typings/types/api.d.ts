@@ -165,3 +165,14 @@ export interface UserInfoResponse {
   nickname?: string
   avatar_url?: string
 }
+
+export interface UploadImageResponse {
+  url: string
+  filename: string
+  size: number
+}
+
+export interface UploadImageRequest {
+  filePath: string
+  type?: string
+}
