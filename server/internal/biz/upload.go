@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	"errors"
+	"net/http"
 	"path/filepath"
 	"strings"
 )
@@ -10,6 +11,7 @@ import (
 var (
 	ErrInvalidFileType = errors.New("invalid file type")
 	ErrFileTooLarge    = errors.New("file too large")
+	ErrInvalidContent  = errors.New("invalid file content")
 )
 
 type UploadedFile struct {
@@ -45,6 +47,7 @@ func (uc *UploadUsecase) UploadImage(ctx context.Context, file *UploadedFile, fi
 }
 
 func (uc *UploadUsecase) validateImage(file *UploadedFile) error {
+	// 验证文件扩展名
 	ext := strings.ToLower(filepath.Ext(file.Filename))
 	allowedExts := map[string]bool{
 		".jpg":  true,
@@ -56,9 +59,21 @@ func (uc *UploadUsecase) validateImage(file *UploadedFile) error {
 		return ErrInvalidFileType
 	}
 
+	// 验证文件大小
 	maxSize := int64(5 * 1024 * 1024)
 	if file.Size > maxSize {
 		return ErrFileTooLarge
+	}
+
+	// 验证文件内容（魔术字节）
+	contentType := http.DetectContentType(file.Content)
+	allowedTypes := map[string]bool{
+		"image/jpeg": true,
+		"image/png":  true,
+	}
+
+	if !allowedTypes[contentType] {
+		return ErrInvalidContent
 	}
 
 	return nil

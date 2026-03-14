@@ -14,7 +14,7 @@ App<IAppOption>({
     // 真机调试时请替换为你的电脑局域网 IP 地址
     // 查看 IP: macOS 运行 `ifconfig | grep "inet "`，Windows 运行 `ipconfig`
     // 确保手机和电脑在同一 WiFi 网络
-    apiBaseURL: 'http://192.168.1.8:8001/api/v1',
+    apiBaseURL: 'http://localhost:8001/api/v1',
     lastSyncTime: 0,
   },
 

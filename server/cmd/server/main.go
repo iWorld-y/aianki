@@ -86,7 +86,7 @@ func main() {
 	userSvc := service.NewUserService(userUc, wechatCli, cfg.Auth.JWTSecret)
 	deckSvc := service.NewDeckService(deckUc, cfg.Auth.JWTSecret)
 	reviewSvc := service.NewReviewService(reviewUc, cfg.Auth.JWTSecret)
-	uploadSvc := service.NewUploadService(uploadUc)
+	uploadSvc := service.NewUploadService(uploadUc, cfg.Auth.JWTSecret)
 
 	// 创建 HTTP 服务器
 	httpSrv := http.NewServer(

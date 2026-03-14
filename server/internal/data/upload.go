@@ -27,7 +27,7 @@ func (r *uploadRepo) SaveFile(ctx context.Context, file *biz.UploadedFile, fileT
 	day := now.Format("02")
 
 	dirPath := filepath.Join(r.storagePath, year, month, day)
-	if err := os.MkdirAll(dirPath, 0755); err != nil {
+	if err := os.MkdirAll(dirPath, 0750); err != nil {
 		return nil, fmt.Errorf("failed to create directory: %w", err)
 	}
 

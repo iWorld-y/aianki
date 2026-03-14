@@ -49,3 +49,6 @@ miniprogram/dist/
 # 本地环境配置
 .env
 .env.local
+
+# 上传文件
+server/storage/uploads/
