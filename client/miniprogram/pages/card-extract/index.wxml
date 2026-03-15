@@ -1,0 +1,135 @@
+<!--pages/card-extract/index.wxml-->
+<navigation-bar title="拍照提取卡片" back="{{true}}" color="black" background="#f6f6f8"></navigation-bar>
+
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <!-- 卡组信息 -->
+    <view class="deck-info">
+      <view class="deck-icon">📚</view>
+      <view class="deck-details">
+        <text class="deck-name">{{deckName}}</text>
+        <text class="deck-hint">拍照或选择图片，AI 将自动提取卡片</text>
+      </view>
+    </view>
+
+    <!-- 图片区域 -->
+    <view class="image-section">
+      <view wx:if="{{!imageUrl}}" class="upload-area" bindtap="onChooseImage">
+        <view class="upload-icon">📷</view>
+        <text class="upload-text">{{loading ? '识别中...' : '点击拍照或选择图片'}}</text>
+        <text class="upload-hint">支持课本、笔记、文档等多种内容</text>
+      </view>
+      <view wx:else class="image-preview">
+        <image class="preview-image" src="{{imageUrl}}" mode="widthFix"></image>
+        <view class="image-actions">
+          <button class="action-btn re-take" bindtap="onChooseImage">重新拍照</button>
+          <button class="action-btn extract" bindtap="onExtractCards" disabled="{{loading}}">
+            {{loading ? '识别中...' : '重新识别'}}
+          </button>
+        </view>
+      </view>
+    </view>
+
+    <!-- 提取结果 -->
+    <view wx:if="{{cards.length > 0}}" class="cards-section">
+      <view class="section-header">
+        <text class="section-title">提取到 {{cards.length}} 张卡片</text>
+        <text class="section-hint">点击卡片可编辑或删除</text>
+      </view>
+
+      <view class="cards-list">
+        <view 
+          class="card-item {{expandedCard === index ? 'expanded' : ''}}" 
+          wx:for="{{cards}}" 
+          wx:key="index"
+          bindtap="onToggleCard"
+          data-index="{{index}}"
+        >
+          <view class="card-header">
+            <view class="card-type-tag {{item.type}}">{{getTypeName(item.type)}}</view>
+            <view class="card-actions">
+              <button class="icon-btn edit" catchtap="onEditCard" data-index="{{index}}">✏️</button>
+              <button class="icon-btn delete" catchtap="onDeleteCard" data-index="{{index}}">🗑️</button>
+            </view>
+          </view>
+          <view class="card-content">
+            <view class="card-front">
+              <text class="label">正面</text>
+              <text class="content">{{item.front}}</text>
+            </view>
+            <view class="card-back">
+              <text class="label">背面</text>
+              <text class="content">{{item.back}}</text>
+            </view>
+            <view wx:if="{{item.tags && item.tags.length > 0}}" class="card-tags">
+              <text class="tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部操作栏 -->
+    <view wx:if="{{cards.length > 0}}" class="bottom-bar">
+      <button class="save-btn {{saving ? 'saving' : ''}}" bindtap="onSaveCards" disabled="{{saving}}">
+        {{saving ? '保存中...' : '保存 ' + cards.length + ' 张卡片'}}
+      </button>
+    </view>
+  </view>
+</scroll-view>
+
+<!-- 编辑卡片弹窗 -->
+<view wx:if="{{showEditModal}}" class="modal-overlay" bindtap="onCloseEditModal">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">编辑卡片</text>
+      <text class="modal-close" bindtap="onCloseEditModal">✕</text>
+    </view>
+    <view class="modal-body">
+      <view class="form-item">
+        <text class="form-label">正面（问题）</text>
+        <textarea 
+          class="form-textarea" 
+          placeholder="请输入卡片正面内容"
+          value="{{editingCard.front}}"
+          bindinput="onEditFront"
+          maxlength="500"
+        />
+      </view>
+      <view class="form-item">
+        <text class="form-label">背面（答案）</text>
+        <textarea 
+          class="form-textarea" 
+          placeholder="请输入卡片背面内容"
+          value="{{editingCard.back}}"
+          bindinput="onEditBack"
+          maxlength="1000"
+        />
+      </view>
+      <view class="form-item">
+        <text class="form-label">卡片类型</text>
+        <view class="type-selector">
+          <view 
+            class="type-option {{editingCard.type === 'qa' ? 'active' : ''}}"
+            bindtap="onSelectType"
+            data-type="qa"
+          >问答</view>
+          <view 
+            class="type-option {{editingCard.type === 'concept' ? 'active' : ''}}"
+            bindtap="onSelectType"
+            data-type="concept"
+          >概念</view>
+          <view 
+            class="type-option {{editingCard.type === 'fill_blank' ? 'active' : ''}}"
+            bindtap="onSelectType"
+            data-type="fill_blank"
+          >填空</view>
+        </view>
+      </view>
+    </view>
+    <view class="modal-footer">
+      <button class="modal-btn cancel" bindtap="onCloseEditModal">取消</button>
+      <button class="modal-btn confirm" bindtap="onConfirmEdit">确定</button>
+    </view>
+  </view>
+</view>

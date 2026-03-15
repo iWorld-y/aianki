@@ -4,7 +4,8 @@
     "pages/decks/index",
     "pages/profile/index",
     "pages/review/index",
-    "pages/create/index"
+    "pages/create/index",
+    "pages/card-extract/index"
   ],
   "window": {
     "navigationBarTextStyle": "black",

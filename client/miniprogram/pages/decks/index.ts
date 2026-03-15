@@ -204,8 +204,23 @@ Component({
      */
     onDeckTap(e: WechatMiniprogram.TouchEvent) {
       const { id } = e.currentTarget.dataset
-      wx.navigateTo({
-        url: `/pages/decks/detail?id=${id}`,
+      const deck = this.data.decks.find(d => d.id === id)
+      
+      wx.showActionSheet({
+        itemList: ['查看详情', '拍照提取卡片'],
+        success: (res) => {
+          if (res.tapIndex === 0) {
+            wx.navigateTo({
+              url: `/pages/decks/detail?id=${id}`,
+            })
+          } else if (res.tapIndex === 1) {
+            requireLogin(() => {
+              wx.navigateTo({
+                url: `/pages/card-extract/index?deckId=${id}&deckName=${encodeURIComponent(deck?.name || '')}`,
+              })
+            })
+          }
+        },
       })
     },
 

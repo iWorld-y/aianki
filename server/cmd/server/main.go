@@ -15,6 +15,7 @@ import (
 	"github.com/jty/snapcard/internal/biz"
 	"github.com/jty/snapcard/internal/data"
 	"github.com/jty/snapcard/internal/service"
+	"github.com/jty/snapcard/pkg/ai"
 	"github.com/jty/snapcard/pkg/wechat"
 
 	_ "github.com/lib/pq"
@@ -50,6 +51,11 @@ func main() {
 			AppID     string `yaml:"app_id"`
 			AppSecret string `yaml:"app_secret"`
 		} `yaml:"wechat"`
+		AI struct {
+			APIKey  string `yaml:"api_key"`
+			BaseURL string `yaml:"base_url"`
+			Model   string `yaml:"model"`
+		} `yaml:"ai"`
 	}
 
 	if err := c.Scan(&cfg); err != nil {
@@ -70,23 +76,29 @@ func main() {
 	// 初始化微信客户端
 	wechatCli := wechat.NewClient(appID, appSecret)
 
+	// 初始化 AI 客户端
+	aiClient := ai.NewAIClient(cfg.AI.APIKey, cfg.AI.BaseURL, cfg.AI.Model)
+
 	// 初始化数据层
 	userRepo := data.NewUserRepo(entClient)
 	deckRepo := data.NewDeckRepo(entClient)
 	reviewRepo := data.NewReviewRepo(entClient)
 	uploadRepo := data.NewUploadRepo()
+	cardExtractRepo := data.NewCardExtractRepo(entClient)
 
 	// 初始化业务层
 	userUc := biz.NewUserUsecase(userRepo, cfg.Auth.JWTSecret)
 	deckUc := biz.NewDeckUsecase(deckRepo)
 	reviewUc := biz.NewReviewUsecase(reviewRepo, 20) // 每日最多复习 20 张卡片
 	uploadUc := biz.NewUploadUsecase(uploadRepo)
+	cardExtractUc := biz.NewCardExtractUsecase(aiClient, cardExtractRepo)
 
 	// 初始化服务层
 	userSvc := service.NewUserService(userUc, wechatCli, cfg.Auth.JWTSecret)
 	deckSvc := service.NewDeckService(deckUc, cfg.Auth.JWTSecret)
 	reviewSvc := service.NewReviewService(reviewUc, cfg.Auth.JWTSecret)
 	uploadSvc := service.NewUploadService(uploadUc, cfg.Auth.JWTSecret)
+	cardExtractSvc := service.NewCardExtractService(cardExtractUc, cfg.Auth.JWTSecret)
 
 	// 创建 HTTP 服务器
 	httpSrv := http.NewServer(
@@ -110,6 +122,10 @@ func main() {
 
 	// 文件上传
 	router.POST("/upload/image", uploadSvc.UploadImage)
+
+	// 卡片提取（AI 拍照识别）
+	router.POST("/card/extract", cardExtractSvc.ExtractCards)
+	router.POST("/card/save", cardExtractSvc.SaveExtractedCards)
 
 	// 静态文件服务
 	uploadsRouter := httpSrv.Route("/uploads")

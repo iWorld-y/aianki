@@ -176,3 +176,46 @@ export interface UploadImageRequest {
   filePath: string
   type?: string
 }
+
+/**
+ * 提取卡片请求
+ */
+export interface ExtractCardsRequest {
+  image_url: string
+  deck_id: number
+}
+
+/**
+ * 提取的卡片
+ */
+export interface ExtractedCard {
+  front: string
+  back: string
+  tags?: string[]
+  type: 'qa' | 'concept' | 'fill_blank'
+  image_url?: string
+}
+
+/**
+ * 提取卡片响应
+ */
+export interface ExtractCardsResponse {
+  cards: ExtractedCard[]
+}
+
+/**
+ * 保存提取的卡片请求
+ */
+export interface SaveExtractedCardsRequest {
+  deck_id: number
+  cards: ExtractedCard[]
+  image_url?: string
+}
+
+/**
+ * 保存提取的卡片响应
+ */
+export interface SaveExtractedCardsResponse {
+  card_ids: number[]
+  count: number
+}

@@ -13,6 +13,10 @@ import type {
   ReviewSubmitRequest,
   ReviewSubmitResponse,
   UserInfoResponse,
+  ExtractCardsRequest,
+  ExtractCardsResponse,
+  SaveExtractedCardsRequest,
+  SaveExtractedCardsResponse,
 } from '../typings/types/api'
 
 interface RequestOptions {
@@ -206,5 +210,31 @@ export function getUserInfo(): Promise<UserInfoResponse> {
     url: '/user/info',
     cacheKey: 'userInfo',
     useCache: false, // 用户信息不使用缓存，每次都从服务器获取最新
+  })
+}
+
+/**
+ * 从图片提取卡片
+ * @param data 提取请求数据
+ * @returns Promise<ExtractCardsResponse>
+ */
+export function extractCards(data: ExtractCardsRequest): Promise<ExtractCardsResponse> {
+  return request<ExtractCardsResponse>({
+    url: '/card/extract',
+    method: 'POST',
+    data,
+  })
+}
+
+/**
+ * 保存提取的卡片
+ * @param data 保存请求数据
+ * @returns Promise<SaveExtractedCardsResponse>
+ */
+export function saveExtractedCards(data: SaveExtractedCardsRequest): Promise<SaveExtractedCardsResponse> {
+  return request<SaveExtractedCardsResponse>({
+    url: '/card/save',
+    method: 'POST',
+    data,
   })
 }
